@@ -1,0 +1,17 @@
+[
+    {
+        "id": "promo-ete-2026",
+        "title": "Soldes d'Été",
+        "description": "Jusqu'à -50% sur toute la collection Robes et Abayas !",
+        "code": "SUMMER26",
+        "image": "/images/hero-bg.svg",
+        "link": "/promotions"
+    },
+    {
+        "id": "offre-bienvenue",
+        "title": "Offre Bienvenue",
+        "description": "-10% pour votre première commande via Instagram",
+        "image": "/images/hero-bg.svg",
+        "link": "https://instagram.com/mastouroversize"
+    }
+]

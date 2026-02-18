@@ -1,0 +1,71 @@
+[
+    {
+        "id": "robe-rose-poudre-oversize",
+        "name": "Robe Oversize Rose Poudré",
+        "price": 59.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "category": "Robes",
+        "description": "Une robe longue et fluide en rose poudré, parfaite pour une allure élégante et modeste. Tissu de haute qualité, opaque et respirant. Coupe oversize pour un confort optimal.",
+        "images": [
+            "/images/products/placeholder-product.svg",
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": true,
+        "promotion": false
+    },
+    {
+        "id": "ensemble-mastour-beige",
+        "name": "Ensemble Mastour Beige",
+        "price": 79.99,
+        "sizes": [
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "category": "Ensembles",
+        "description": "Un ensemble deux pièces beige clair composé d'une tunique longue et d'un pantalon large. Idéal pour le quotidien ou les occasions spéciales.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": true,
+        "promotion": true,
+        "discountPrice": 69.99
+    },
+    {
+        "id": "abaya-papillon-noire",
+        "name": "Abaya Papillon Noire",
+        "price": 45.00,
+        "sizes": [
+            "One Size"
+        ],
+        "category": "Abayas",
+        "description": "L'indispensable abaya papillon noire. Coupe très ample, tissu nidha fluide. Convient à toutes les morphologies.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": true,
+        "promotion": false
+    },
+    {
+        "id": "kimono-soie-rose",
+        "name": "Kimono Soie de Médine Rose",
+        "price": 35.50,
+        "sizes": [
+            "S/M",
+            "L/XL"
+        ],
+        "category": "Kimonos",
+        "description": "Kimono léger en soie de Médine, couleur rose vif. Se porte ouvert sur une robe ou un ensemble.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false
+    }
+]

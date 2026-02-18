@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-montserrat);
+  
+  --color-rose-main: #E91E63;
+  --color-rose-light: #F48FB1;
+  --color-beige-light: #F5F5DC;
+  --color-beige-dark: #D7CCC8;
+  --color-off-white: #FCFCFC;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+body {
+  font-family: var(--font-montserrat);
+  background-color: var(--color-off-white);
+  color: #1f2937;
+}
