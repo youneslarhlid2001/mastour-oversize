@@ -2,12 +2,13 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { ArrowLeft, Check, Instagram, Ruler, ShoppingBag } from 'lucide-react';
+import { Check } from 'lucide-react';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
-import SectionTitle from '@/components/SectionTitle';
+import SizeSelector from '@/components/SizeSelector';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
-const products = productsData as Product[];
+const products = productsData as unknown as Product[];
 
 interface Props {
     params: { slug: string };
@@ -47,10 +48,6 @@ export default async function ProductPage({ params }: Props) {
     const isDiscounted = product.promotion && product.discountPrice;
     const price = isDiscounted ? product.discountPrice : product.price;
 
-    // Instagram message template
-    const message = `Bonjour, je souhaite commander le produit "${product.name}" (Ref: ${product.id}). Est-il disponible en taille ... ?`;
-    const instagramUrl = `https://instagram.com/mastouroversize`; // No direct DM pre-fill widely supported, standard profile link
-
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Product',
@@ -79,9 +76,10 @@ export default async function ProductPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <div className="container mx-auto px-4 max-w-6xl">
-                <Link href="/articles" className="inline-flex items-center text-gray-500 hover:text-rose-600 mb-8 transition-colors">
-                    <ArrowLeft size={20} className="mr-2" /> Retour à la collection
-                </Link>
+                <Breadcrumbs items={[
+                    { label: 'Collection', href: '/articles' },
+                    { label: product.name },
+                ]} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
                     {/* Gallery - Mobile stacking, Desktop grid/stack */}
@@ -115,62 +113,80 @@ export default async function ProductPage({ params }: Props) {
                     </div>
 
                     {/* Details */}
-                    <div className="flex flex-col h-full justify-center">
+                    <div className="flex flex-col gap-6">
+                        {/* --- ABOVE THE FOLD: Key info + CTA --- */}
                         <div>
-                            <span className="text-rose-500 font-medium tracking-wide text-sm uppercase mb-2 block">{product.category}</span>
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
+                            <span className="text-rose-500 font-medium tracking-wide text-sm uppercase mb-1 block">{product.category}</span>
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
 
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="text-3xl font-bold text-gray-900">
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="text-2xl font-bold text-gray-900">
                                     {price?.toFixed(2)}€
                                 </div>
                                 {isDiscounted && (
-                                    <div className="text-xl text-gray-400 line-through decoration-rose-500 decoration-2">
+                                    <div className="text-lg text-gray-400 line-through decoration-rose-500 decoration-2">
                                         {product.price.toFixed(2)}€
                                     </div>
                                 )}
+                                <div className="flex items-center gap-1.5 text-xs text-green-600 font-medium bg-green-50 px-2.5 py-1 rounded-full ml-auto">
+                                    <Check size={14} /> En stock
+                                </div>
                             </div>
 
-                            <div className="border-t border-b border-gray-100 py-6 mb-8">
-                                <p className="text-gray-600 leading-relaxed text-lg mb-6">
-                                    {product.description}
-                                </p>
-
-                                <div className="flex items-center gap-2 text-sm text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full w-fit mb-6">
-                                    <Check size={16} /> En stock - Livraison 48h
-                                </div>
-
-                                <div className="mb-6">
-                                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <Ruler size={18} /> Tailles disponibles
-                                    </h3>
-                                    <div className="flex flex-wrap gap-3">
-                                        {product.sizes.map(size => (
-                                            <span key={size} className="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 font-medium min-w-[3rem] text-center hover:border-rose-300 hover:text-rose-600 cursor-default cursor-pointer transition-colors bg-white">
-                                                {size}
+                            {/* Couleurs - compact inline */}
+                            {product.colors && product.colors.length > 0 && (
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-xs text-gray-400 uppercase tracking-wider">Coloris :</span>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {product.colors.map(color => (
+                                            <span key={color} className="px-2.5 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs text-gray-600 font-medium">
+                                                {color}
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
-                        <div className="mt-auto bg-rose-50 p-6 rounded-2xl border border-rose-100">
-                            <h3 className="font-bold text-rose-800 mb-2">Comment commander ?</h3>
-                            <p className="text-sm text-gray-600 mb-4">
-                                Les commandes se font exclusivement sur Instagram. Cliquez ci-dessous pour nous envoyer un message avec la référence.
+                        {/* Interactive Size Selector + Instagram CTA */}
+                        <SizeSelector
+                            productName={product.name}
+                            productId={product.id}
+                            sizes={product.sizes}
+                            stock={product.stock}
+                        />
+
+                        {/* --- BELOW THE FOLD: Details --- */}
+                        <div className="border-t border-gray-100 pt-6 space-y-4">
+                            <p className="text-gray-600 leading-relaxed text-sm">
+                                {product.description}
                             </p>
-                            <Link
-                                href={instagramUrl}
-                                target="_blank"
-                                className="w-full bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3 text-lg"
-                            >
-                                <Instagram size={24} />
-                                Commander sur Instagram
-                            </Link>
-                            <div className="mt-3 text-center">
-                                <span className="text-xs text-gray-400">Réf: {product.id} (à mentionner)</span>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                {/* Matière */}
+                                {product.material && (
+                                    <div className="flex items-start gap-2">
+                                        <span className="text-gray-400 font-semibold uppercase tracking-wide text-xs min-w-[65px]">Matière</span>
+                                        <span className="text-gray-700 text-xs">{product.material}</span>
+                                    </div>
+                                )}
+
+                                {/* Poids */}
+                                {product.weight && (
+                                    <div className="flex items-start gap-2">
+                                        <span className="text-gray-400 font-semibold uppercase tracking-wide text-xs min-w-[65px]">Poids</span>
+                                        <span className="text-gray-700 text-xs">{product.weight}</span>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Entretien */}
+                            {product.careInstructions && (
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                    <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide block mb-1">Entretien</span>
+                                    <p className="text-gray-600 text-xs leading-relaxed">{product.careInstructions}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

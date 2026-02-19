@@ -9,6 +9,11 @@ export interface Product {
     featured: boolean;
     promotion: boolean;
     discountPrice?: number;
+    colors?: string[];
+    material?: string;
+    careInstructions?: string;
+    weight?: string;
+    stock?: Record<string, number>;
 }
 
 export interface Promotion {

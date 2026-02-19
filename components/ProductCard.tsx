@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
-import { ArrowRight, ShoppingBag } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface ProductCardProps {
     product: Product;
@@ -13,55 +13,49 @@ export default function ProductCard({ product }: ProductCardProps) {
     return (
         <Link
             href={`/articles/${product.id}`}
-            className="group block relative overflow-hidden rounded-xl border border-rose-50 hover:shadow-lg transition-all duration-300 bg-white"
+            className="group block"
         >
-            {/* Badge Promo */}
-            {isDiscounted && (
-                <span className="absolute top-2 left-2 z-10 bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
-                    PROMO
-                </span>
-            )}
-
             {/* Image Container */}
-            <div className="relative aspect-[3/4] w-full bg-gray-50 overflow-hidden">
+            <div className="relative aspect-[3/4] w-full bg-[#f0f0f0] overflow-hidden mb-4">
                 <Image
                     src={product.images[0] || '/images/products/placeholder-product.svg'}
                     alt={product.name}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
-                {/* Overlay CTA */}
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="bg-white/90 text-rose-700 px-4 py-2 rounded-full font-medium text-sm shadow-md translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
-                        Voir Détails <ArrowRight size={14} />
+                {/* Badge Promo */}
+                {isDiscounted && (
+                    <span className="absolute top-0 left-0 bg-rose-main text-white text-[10px] uppercase font-bold px-3 py-1.5 tracking-widest">
+                        Promo
+                    </span>
+                )}
+
+                {/* Hover Action */}
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <Plus size={24} strokeWidth={1} />
                     </span>
                 </div>
             </div>
 
             {/* Content */}
-            <div className="p-4">
-                <h3 className="text-gray-900 font-medium text-lg leading-tight mb-1 truncate group-hover:text-rose-600 transition-colors">
+            <div>
+                <h3 className="text-gray-900 font-serif text-lg leading-tight mb-1 group-hover:text-rose-main transition-colors">
                     {product.name}
                 </h3>
-                <p className="text-gray-500 text-sm mb-3 capitalize">{product.category}</p>
+                <p className="text-gray-500 text-xs uppercase tracking-widest mb-2">{product.category}</p>
 
-                <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                        {isDiscounted ? (
-                            <div className="flex items-center gap-2">
-                                <span className="text-rose-600 font-bold text-lg">{product.discountPrice?.toFixed(2)}€</span>
-                                <span className="text-gray-400 line-through text-xs">{product.price.toFixed(2)}€</span>
-                            </div>
-                        ) : (
-                            <span className="text-gray-900 font-bold text-lg">{product.price.toFixed(2)}€</span>
-                        )}
-                    </div>
-
-                    <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors">
-                        <ShoppingBag size={16} />
-                    </div>
+                <div className="flex items-center gap-2 font-medium">
+                    {isDiscounted ? (
+                        <>
+                            <span className="text-rose-800">{product.discountPrice?.toFixed(2)}€</span>
+                            <span className="text-gray-400 line-through text-sm font-light">{product.price.toFixed(2)}€</span>
+                        </>
+                    ) : (
+                        <span className="text-gray-900">{product.price.toFixed(2)}€</span>
+                    )}
                 </div>
             </div>
         </Link>

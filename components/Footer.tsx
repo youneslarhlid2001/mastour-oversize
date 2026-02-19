@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import { Instagram, Mail, MapPin } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 export default function Footer() {
     return (
         <footer className="bg-rose-50 text-gray-700 py-12 border-t border-rose-100">
             <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
                 <div>
-                    <h3 className="text-xl font-bold text-rose-600 mb-4">MASTOUR OVERSIZE</h3>
+                    <div className="mb-4">
+                        <Logo variant="full" colorScheme="rose" width={180} height={70} />
+                    </div>
                     <p className="text-sm leading-relaxed mb-4">
                         Vêtements mastour élégants et modernes. La qualité au service de votre modestie.
                     </p>
@@ -27,6 +30,7 @@ export default function Footer() {
                         <li><Link href="/promotions" className="hover:text-rose-500 transition-colors">Promotions</Link></li>
                         <li><Link href="/about" className="hover:text-rose-500 transition-colors">À propos</Link></li>
                         <li><Link href="/contact" className="hover:text-rose-500 transition-colors">Contact</Link></li>
+                        <li><Link href="/faq" className="hover:text-rose-500 transition-colors">FAQ</Link></li>
                         <li><Link href="/cgv" className="hover:text-rose-500 transition-colors">Mentions Légales</Link></li>
                         <li><Link href="/rgpd" className="hover:text-rose-500 transition-colors">Politique de Confidentialité</Link></li>
                     </ul>

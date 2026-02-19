@@ -10,13 +10,26 @@
             "XL"
         ],
         "category": "Robes",
-        "description": "Une robe longue et fluide en rose poudré, parfaite pour une allure élégante et modeste. Tissu de haute qualité, opaque et respirant. Coupe oversize pour un confort optimal.",
+        "description": "Une robe longue et fluide en rose poudré, parfaite pour une allure élégante et modeste. Tissu de haute qualité, opaque et respirant. Coupe oversize pour un confort optimal. Longueur cheville, manches longues évasées.",
         "images": [
             "/images/products/placeholder-product.svg",
             "/images/products/placeholder-product.svg"
         ],
         "featured": true,
-        "promotion": false
+        "promotion": false,
+        "colors": [
+            "Rose poudré",
+            "Beige clair"
+        ],
+        "material": "Médina Silk (100% polyester haute qualité)",
+        "careInstructions": "Lavage à 30°C, pas de sèche-linge, repassage doux à l'envers",
+        "weight": "320g",
+        "stock": {
+            "S": 8,
+            "M": 12,
+            "L": 10,
+            "XL": 5
+        }
     },
     {
         "id": "ensemble-mastour-beige",
@@ -29,13 +42,27 @@
             "XXL"
         ],
         "category": "Ensembles",
-        "description": "Un ensemble deux pièces beige clair composé d'une tunique longue et d'un pantalon large. Idéal pour le quotidien ou les occasions spéciales.",
+        "description": "Un ensemble deux pièces beige clair composé d'une tunique longue et d'un pantalon large palazzo. Idéal pour le quotidien ou les occasions spéciales. Tissu fluide et opaque, coupe ample qui ne marque pas les formes.",
         "images": [
             "/images/products/placeholder-product.svg"
         ],
         "featured": true,
         "promotion": true,
-        "discountPrice": 69.99
+        "discountPrice": 69.99,
+        "colors": [
+            "Beige clair",
+            "Noir",
+            "Taupe"
+        ],
+        "material": "Crêpe Premium (polyester-élasthanne)",
+        "careInstructions": "Lavage à 30°C en machine, repassage à basse température",
+        "weight": "450g",
+        "stock": {
+            "M": 6,
+            "L": 9,
+            "XL": 7,
+            "XXL": 3
+        }
     },
     {
         "id": "abaya-papillon-noire",
@@ -45,12 +72,21 @@
             "One Size"
         ],
         "category": "Abayas",
-        "description": "L'indispensable abaya papillon noire. Coupe très ample, tissu nidha fluide. Convient à toutes les morphologies.",
+        "description": "L'indispensable abaya papillon noire. Coupe très ample avec manches larges façon papillon, tissu nidha fluide et ultra-léger. Convient à toutes les morphologies. Se porte ouverte en kimono ou fermée en robe.",
         "images": [
             "/images/products/placeholder-product.svg"
         ],
         "featured": true,
-        "promotion": false
+        "promotion": false,
+        "colors": [
+            "Noir"
+        ],
+        "material": "Nidha (polyester léger, fluide)",
+        "careInstructions": "Lavage délicat à la main ou programme délicat 30°C",
+        "weight": "250g",
+        "stock": {
+            "One Size": 20
+        }
     },
     {
         "id": "kimono-soie-rose",
@@ -61,11 +97,333 @@
             "L/XL"
         ],
         "category": "Kimonos",
-        "description": "Kimono léger en soie de Médine, couleur rose vif. Se porte ouvert sur une robe ou un ensemble.",
+        "description": "Kimono léger en soie de Médine, couleur rose ancien doux. Se porte ouvert sur une robe ou un ensemble. Tombé fluide et élégant, bords légèrement arrondis. Pièce polyvalente et raffinée.",
         "images": [
             "/images/products/placeholder-product.svg"
         ],
         "featured": false,
-        "promotion": false
+        "promotion": false,
+        "colors": [
+            "Rose ancien",
+            "Blanc cassé",
+            "Vert sauge"
+        ],
+        "material": "Soie de Médine (100% polyester satiné)",
+        "careInstructions": "Lavage à la main à froid, séchage à plat, repassage doux",
+        "weight": "180g",
+        "stock": {
+            "S/M": 14,
+            "L/XL": 11
+        }
+    },
+    {
+        "id": "robe-lin-camel-oversized",
+        "name": "Robe Lin Oversize Camel",
+        "price": 69.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "category": "Robes",
+        "description": "Robe oversize en lin mélangé couleur camel. Texture naturelle et respirante, idéale pour les beaux jours. Col rond, manches longues rabattables, poches latérales discrètes. Un classique intemporel.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": true,
+        "promotion": false,
+        "colors": [
+            "Camel",
+            "Kaki",
+            "Écru"
+        ],
+        "material": "Lin mélangé (55% lin, 45% viscose)",
+        "careInstructions": "Lavage à 30°C programme délicat, repassage vapeur recommandé",
+        "weight": "380g",
+        "stock": {
+            "S": 5,
+            "M": 8,
+            "L": 6,
+            "XL": 4
+        }
+    },
+    {
+        "id": "abaya-brodee-blanche",
+        "name": "Abaya Brodée Blanche",
+        "price": 89.99,
+        "sizes": [
+            "52",
+            "54",
+            "56",
+            "58"
+        ],
+        "category": "Abayas",
+        "description": "Abaya blanche avec broderies florales délicates sur le devant et les poignets. Tissu crêpe épais et opaque. Fermeture boutons cachés sur le devant. Pièce de cérémonie élégante pour les occasions spéciales.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": true,
+        "discountPrice": 74.99,
+        "colors": [
+            "Blanc",
+            "Crème"
+        ],
+        "material": "Crêpe lourd (100% polyester premium)",
+        "careInstructions": "Nettoyage à sec recommandé ou lavage délicat à la main",
+        "weight": "420g",
+        "stock": {
+            "52": 4,
+            "54": 6,
+            "56": 5,
+            "58": 3
+        }
+    },
+    {
+        "id": "ensemble-palazzo-noir",
+        "name": "Ensemble Palazzo Noir Chic",
+        "price": 84.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "category": "Ensembles",
+        "description": "Ensemble noir deux pièces composé d'une tunique longue col V croisé et d'un pantalon palazzo ultra-fluide. Look chic et moderne, parfait pour le bureau ou une sortie entre amies. Tissu crêpe stretch confortable.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false,
+        "colors": [
+            "Noir",
+            "Marine"
+        ],
+        "material": "Crêpe stretch (95% polyester, 5% élasthanne)",
+        "careInstructions": "Lavage en machine 30°C, pas de sèche-linge",
+        "weight": "480g",
+        "stock": {
+            "S": 7,
+            "M": 10,
+            "L": 8,
+            "XL": 6,
+            "XXL": 3
+        }
+    },
+    {
+        "id": "robe-satin-emeraude",
+        "name": "Robe Satin Émeraude",
+        "price": 74.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "category": "Robes",
+        "description": "Robe longue en satin duchesse couleur émeraude profonde. Coupe droite avec ceinture taille amovible, manches longues bouffantes. Un éclat luxueux pour les soirées et cérémonies. Doublure intégrale pour une opacité parfaite.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false,
+        "colors": [
+            "Émeraude",
+            "Bordeaux",
+            "Or rose"
+        ],
+        "material": "Satin duchesse doublé (polyester satiné + doublure viscose)",
+        "careInstructions": "Nettoyage à sec uniquement, repassage envers à basse température",
+        "weight": "500g",
+        "stock": {
+            "S": 3,
+            "M": 5,
+            "L": 4,
+            "XL": 2
+        }
+    },
+    {
+        "id": "kimono-velours-taupe",
+        "name": "Kimono Velours Taupe",
+        "price": 49.99,
+        "sizes": [
+            "S/M",
+            "L/XL"
+        ],
+        "category": "Kimonos",
+        "description": "Kimono en velours doux couleur taupe, idéal pour la mi-saison. Texture luxueuse au toucher, tombé impeccable. Se porte ouvert avec une ceinture fine ou librement. Finitions bords francs pour un style contemporain.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": true,
+        "discountPrice": 39.99,
+        "colors": [
+            "Taupe",
+            "Prune",
+            "Chocolat"
+        ],
+        "material": "Velours lisse (90% polyester, 10% élasthanne)",
+        "careInstructions": "Lavage à l'envers à 30°C, séchage à plat, ne pas repasser",
+        "weight": "350g",
+        "stock": {
+            "S/M": 9,
+            "L/XL": 7
+        }
+    },
+    {
+        "id": "robe-maxi-lavande",
+        "name": "Robe Maxi Lavande",
+        "price": 64.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "category": "Robes",
+        "description": "Robe maxi en mousseline doublée couleur lavande douce. Coupe évasée avec taille smockée élastiquée pour un ajustement confortable. Manches longues plissées, jupe fluide et vaporeuse. Parfaite pour le printemps et l'été.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false,
+        "colors": [
+            "Lavande",
+            "Pêche",
+            "Menthe"
+        ],
+        "material": "Mousseline doublée (polyester + doublure coton-polyester)",
+        "careInstructions": "Lavage délicat 30°C, séchage naturel sur cintre, repassage vapeur léger",
+        "weight": "300g",
+        "stock": {
+            "S": 10,
+            "M": 12,
+            "L": 8,
+            "XL": 5
+        }
+    },
+    {
+        "id": "ensemble-sporty-gris",
+        "name": "Ensemble Sporty Chic Gris",
+        "price": 72.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "category": "Ensembles",
+        "description": "Ensemble sport-chic en jersey premium gris chiné. Sweat oversize à col rond avec fente latérale et pantalon jogging taille haute resserré aux chevilles. Confort absolu pour les journées actives avec une touche d'élégance.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false,
+        "colors": [
+            "Gris chiné",
+            "Noir",
+            "Bleu nuit"
+        ],
+        "material": "Jersey premium (80% coton, 20% polyester)",
+        "careInstructions": "Lavage en machine 30°C, sèche-linge programme doux",
+        "weight": "550g",
+        "stock": {
+            "S": 6,
+            "M": 9,
+            "L": 7,
+            "XL": 4
+        }
+    },
+    {
+        "id": "abaya-everyday-marine",
+        "name": "Abaya Everyday Marine",
+        "price": 42.00,
+        "sizes": [
+            "One Size"
+        ],
+        "category": "Abayas",
+        "description": "Abaya du quotidien en bleu marine, coupe droite simple et élégante. Tissu Medina Silk léger, manches droites, ouverture devant avec fermeture éclair invisible. Pratique, polyvalente et facile à enfiler.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false,
+        "colors": [
+            "Marine",
+            "Noir",
+            "Gris anthracite"
+        ],
+        "material": "Médina Silk (100% polyester)",
+        "careInstructions": "Lavage en machine 30°C, repassage doux",
+        "weight": "260g",
+        "stock": {
+            "One Size": 25
+        }
+    },
+    {
+        "id": "kimono-dentelle-ivoire",
+        "name": "Kimono Dentelle Ivoire",
+        "price": 55.00,
+        "sizes": [
+            "S/M",
+            "L/XL"
+        ],
+        "category": "Kimonos",
+        "description": "Kimono long en dentelle fine ivoire, pièce statement pour les cérémonies. Dentelle florale délicate, doublé sur le corps, manches transparentes. Se porte sur une robe longue ou un ensemble monochrome pour un effet wow.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": false,
+        "colors": [
+            "Ivoire",
+            "Nude"
+        ],
+        "material": "Dentelle polyester + doublure crêpe",
+        "careInstructions": "Lavage à la main uniquement, séchage à plat, ne pas essorer",
+        "weight": "280g",
+        "stock": {
+            "S/M": 5,
+            "L/XL": 4
+        }
+    },
+    {
+        "id": "robe-chemise-olive",
+        "name": "Robe Chemise Oversize Olive",
+        "price": 62.99,
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "category": "Robes",
+        "description": "Robe chemise longue en coton mélangé couleur olive. Col classique, boutonnage complet devant, manches longues à poignets boutonnés. Ceinture tissu assortie. Style casual-chic parfait pour le quotidien. Tissu épais et opaque.",
+        "images": [
+            "/images/products/placeholder-product.svg"
+        ],
+        "featured": false,
+        "promotion": true,
+        "discountPrice": 52.99,
+        "colors": [
+            "Olive",
+            "Camel",
+            "Bleu ciel"
+        ],
+        "material": "Coton mélangé (65% coton, 35% polyester)",
+        "careInstructions": "Lavage en machine 40°C, repassage normal",
+        "weight": "400g",
+        "stock": {
+            "S": 8,
+            "M": 11,
+            "L": 9,
+            "XL": 6,
+            "XXL": 3
+        }
     }
 ]

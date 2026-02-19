@@ -1,34 +1,91 @@
 "use client";
 
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import SectionTitle from '@/components/SectionTitle';
 
+const contactSchema = z.object({
+    name: z
+        .string()
+        .min(2, 'Le nom doit contenir au moins 2 caractères')
+        .max(100, 'Le nom ne peut pas dépasser 100 caractères'),
+    email: z
+        .string()
+        .min(1, 'L\'email est requis')
+        .email('Format d\'email invalide (ex: nom@domaine.com)'),
+    phone: z
+        .string()
+        .optional()
+        .refine(
+            (val) => !val || /^[\d\s+\-().]{8,20}$/.test(val),
+            'Numéro de téléphone invalide'
+        ),
+    message: z
+        .string()
+        .min(10, 'Le message doit contenir au moins 10 caractères')
+        .max(2000, 'Le message ne peut pas dépasser 2000 caractères'),
+    consent: z
+        .boolean()
+        .refine((val) => val === true, 'Vous devez accepter le traitement de vos données'),
+    _gotcha: z.string().max(0).optional(),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
+
+function FieldError({ message }: { message?: string }) {
+    if (!message) return null;
+    return (
+        <p className="flex items-center gap-1 mt-1.5 text-xs text-red-500 animate-fade-in">
+            <AlertCircle size={12} />
+            {message}
+        </p>
+    );
+}
+
 export default function ContactPage() {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-        consent: false,
-        _gotcha: '' // Honeypot
-    });
-    const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData.consent) return;
-        if (formData._gotcha) return; // Spam detected
-        setLoading(true);
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors, isSubmitting, touchedFields },
+    } = useForm<ContactFormData>({
+        resolver: zodResolver(contactSchema),
+        mode: 'onTouched',     // validate on blur, then on change
+        defaultValues: {
+            name: '',
+            email: '',
+            phone: '',
+            message: '',
+            consent: false,
+            _gotcha: '',
+        },
+    });
+
+    const messageValue = watch('message');
+    const messageLength = messageValue?.length || 0;
+
+    const onSubmit = async (data: ContactFormData) => {
+        if (data._gotcha) return; // Spam
 
         // Simulate sending
-        setTimeout(() => {
-            setLoading(false);
-            setSuccess(true);
-            setFormData({ name: '', email: '', phone: '', message: '', consent: false, _gotcha: '' });
-        }, 1500);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        setSuccess(true);
+        reset();
     };
+
+    const inputClass = (fieldName: keyof ContactFormData) =>
+        `w-full px-4 py-3 rounded-xl bg-gray-50 border transition-all outline-none ${errors[fieldName]
+            ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+            : touchedFields[fieldName] && !errors[fieldName]
+                ? 'border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-100'
+                : 'border-gray-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200'
+        }`;
 
     return (
         <div className="bg-white min-h-screen py-24 relative overflow-hidden">
@@ -97,85 +154,97 @@ export default function ContactPage() {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                                 <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nom Complet</label>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Nom Complet <span className="text-red-400">*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         id="name"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all outline-none"
+                                        {...register('name')}
+                                        className={inputClass('name')}
                                         placeholder="Votre nom"
                                     />
+                                    <FieldError message={errors.name?.message} />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                            Email <span className="text-red-400">*</span>
+                                        </label>
                                         <input
                                             type="email"
                                             id="email"
-                                            required
-                                            value={formData.email}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all outline-none"
+                                            {...register('email')}
+                                            className={inputClass('email')}
                                             placeholder="votre@email.com"
                                         />
+                                        <FieldError message={errors.email?.message} />
                                     </div>
                                     <div>
-                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Téléphone (optionnel)</label>
+                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                                            Téléphone <span className="text-gray-400 font-normal">(optionnel)</span>
+                                        </label>
                                         <input
                                             type="tel"
                                             id="phone"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all outline-none"
+                                            {...register('phone')}
+                                            className={inputClass('phone')}
                                             placeholder="06 12 34 56 78"
                                         />
+                                        <FieldError message={errors.phone?.message} />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                                            Message <span className="text-red-400">*</span>
+                                        </label>
+                                        <span className={`text-xs ${messageLength > 0 && messageLength < 10
+                                                ? 'text-red-400'
+                                                : messageLength >= 10
+                                                    ? 'text-green-500'
+                                                    : 'text-gray-400'
+                                            }`}>
+                                            {messageLength}/2000
+                                        </span>
+                                    </div>
                                     <textarea
                                         id="message"
-                                        required
                                         rows={4}
-                                        value={formData.message}
-                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all outline-none resize-none"
-                                        placeholder="Comment pouvons-nous vous aider ?"
+                                        {...register('message')}
+                                        className={`${inputClass('message')} resize-none`}
+                                        placeholder="Comment pouvons-nous vous aider ? (min. 10 caractères)"
                                     ></textarea>
+                                    <FieldError message={errors.message?.message} />
                                 </div>
 
                                 <div className="flex items-start gap-3 pt-2">
-                                    <div className="flex items-center h-5">
+                                    <div className="flex items-center h-5 mt-0.5">
                                         <input
                                             id="consent"
-                                            name="consent"
                                             type="checkbox"
-                                            required
-                                            checked={formData.consent}
-                                            onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
+                                            {...register('consent')}
                                             className="focus:ring-rose-500 h-4 w-4 text-rose-600 border-gray-300 rounded cursor-pointer"
                                         />
                                     </div>
-                                    <div className="ml-2 text-sm">
-                                        <label htmlFor="consent" className="font-medium text-gray-700 cursor-pointer">
-                                            J'accepte que mes données soient utilisées pour me recontacter.
+                                    <div className="ml-2">
+                                        <label htmlFor="consent" className="text-sm font-medium text-gray-700 cursor-pointer">
+                                            J&apos;accepte que mes données soient utilisées pour me recontacter.
+                                            <span className="text-red-400"> *</span>
                                         </label>
                                         <p className="text-gray-500 text-xs mt-1">Vos données sont protégées selon notre politique RGPD.</p>
+                                        <FieldError message={errors.consent?.message} />
                                     </div>
                                 </div>
 
                                 {/* Honeypot field */}
                                 <input
                                     type="text"
-                                    name="_gotcha"
-                                    value={formData._gotcha}
-                                    onChange={(e) => setFormData({ ...formData, _gotcha: e.target.value })}
+                                    {...register('_gotcha')}
                                     style={{ position: 'absolute', opacity: 0, zIndex: -10 }}
                                     tabIndex={-1}
                                     autoComplete="off"
@@ -183,10 +252,10 @@ export default function ContactPage() {
 
                                 <button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={isSubmitting}
                                     className="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
-                                    {loading ? (
+                                    {isSubmitting ? (
                                         <span className="animate-pulse">Envoi en cours...</span>
                                     ) : (
                                         <>Envoyer le message <Send size={18} /></>

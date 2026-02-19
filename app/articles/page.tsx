@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 import productsData from '@/data/products.json';
-import ProductCard from '@/components/ProductCard';
 import SectionTitle from '@/components/SectionTitle';
+import ProductFilters from '@/components/ProductFilters';
 import { Product } from '@/types';
 
-const products = productsData as Product[];
+const products = productsData as unknown as Product[];
 
 export const metadata: Metadata = {
     title: 'Collection Mastour Oversize | Robes, Abayas, Ensembles',
@@ -20,13 +20,7 @@ export default function ArticlesPage() {
                     <SectionTitle title="Toute la Collection" subtitle="Des pièces uniques pensées pour vous sublimer en toute modestie." />
                 </div>
 
-                {/* Filters could go here - keeping it simple for MVP */}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                    {products.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+                <ProductFilters products={products} />
             </div>
         </div>
     );

@@ -1,0 +1,18 @@
+<svg width="340" height="120" viewBox="0 0 340 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Subtle floral ornament -->
+  <g transform="translate(110, 0)">
+    <path d="M10 15 C20 5, 35 5, 45 15 C55 25, 65 25, 75 15 C85 5, 100 5, 110 15" stroke="#D8829D" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <ellipse cx="60" cy="15" rx="3" ry="6" fill="none" stroke="#D8829D" stroke-width="0.8" opacity="0.6"/>
+    <path d="M50 15 Q55 8 60 15" stroke="#D8829D" stroke-width="0.7" fill="none" opacity="0.5"/>
+    <path d="M60 15 Q65 8 70 15" stroke="#D8829D" stroke-width="0.7" fill="none" opacity="0.5"/>
+  </g>
+
+  <!-- MASTOUR -->
+  <text x="170" y="68" text-anchor="middle" font-family="'Playfair Display', 'Georgia', serif" font-size="38" font-weight="700" fill="#2D2D2D" letter-spacing="0.2em">MASTOUR</text>
+
+  <!-- Thin decorative line -->
+  <line x1="100" y1="80" x2="240" y2="80" stroke="#D8829D" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- OVERSIZE -->
+  <text x="170" y="103" text-anchor="middle" font-family="'Playfair Display', 'Georgia', serif" font-size="16" font-weight="400" fill="#6B6B6B" letter-spacing="0.35em">OVERSIZE</text>
+</svg>

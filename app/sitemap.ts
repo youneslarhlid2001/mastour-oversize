@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
 
-const products = productsData as Product[];
+const products = productsData as unknown as Product[];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://mastouroversize.com'; // User should configure this
@@ -44,6 +44,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.5,
+        },
+        {
+            url: `${baseUrl}/cgv`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.3,
+        },
+        {
+            url: `${baseUrl}/rgpd`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.3,
+        },
+        {
+            url: `${baseUrl}/faq`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
         },
         ...productUrls,
     ];

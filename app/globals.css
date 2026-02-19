@@ -1,23 +1,260 @@
 @import "tailwindcss";
 
 @theme {
+  --font-serif: var(--font-playfair);
   --font-sans: var(--font-montserrat);
-  
-  --color-rose-main: #E91E63;
-  --color-rose-light: #F48FB1;
-  --color-beige-light: #F5F5DC;
-  --color-beige-dark: #D7CCC8;
-  --color-off-white: #FCFCFC;
+
+  --color-rose-main: #D8829D;
+  --color-rose-light: #FCEFF4;
+  --color-rose-dark: #A64D79;
+
+  --color-beige-light: #F7F5F2;
+  --color-beige-dark: #E6DFD6;
+
+  --color-off-white: #FAFAFA;
+  --color-charcoal: #2D2D2D;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  .font-display {
+    font-family: var(--font-serif);
+  }
 }
 
 body {
-  font-family: var(--font-montserrat);
+  font-family: var(--font-sans);
   background-color: var(--color-off-white);
-  color: #1f2937;
+  color: var(--color-charcoal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Bottom nav spacing on mobile */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 4rem;
+  }
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out both;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+/* ===== DARK MODE ===== */
+.dark body {
+  background-color: #1a1a1f;
+  color: #e8e4df;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #f0ece7;
+}
+
+/* Backgrounds */
+.dark .bg-white {
+  background-color: #222228 !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #2a2a30 !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #2d2d33 !important;
+}
+
+.dark .bg-\[\\#FAFAFA\] {
+  background-color: #1a1a1f !important;
+}
+
+.dark .bg-beige-light {
+  background-color: #1e1e24 !important;
+}
+
+.dark .bg-rose-50 {
+  background-color: #2a2028 !important;
+}
+
+.dark .bg-rose-light {
+  background-color: #251e23 !important;
+}
+
+.dark .bg-rose-50\/30 {
+  background-color: rgba(42, 32, 40, 0.3) !important;
+}
+
+.dark .bg-off-white {
+  background-color: #1a1a1f !important;
+}
+
+/* Text */
+.dark .text-gray-900 {
+  color: #f0ece7 !important;
+}
+
+.dark .text-gray-800 {
+  color: #e0dbd5 !important;
+}
+
+.dark .text-gray-700 {
+  color: #c5bfb8 !important;
+}
+
+.dark .text-gray-600 {
+  color: #a8a29e !important;
+}
+
+.dark .text-gray-500 {
+  color: #8a847e !important;
+}
+
+.dark .text-gray-400 {
+  color: #6e6963 !important;
+}
+
+/* Borders */
+.dark .border-gray-100 {
+  border-color: #333338 !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #3a3a40 !important;
+}
+
+.dark .border-gray-300 {
+  border-color: #444448 !important;
+}
+
+.dark .border-rose-100 {
+  border-color: #3d2833 !important;
+}
+
+.dark .border-rose-200 {
+  border-color: #4a2f3d !important;
+}
+
+/* Header */
+.dark header.bg-white\/90,
+.dark .bg-white\/90 {
+  background-color: rgba(34, 34, 40, 0.92) !important;
+}
+
+/* Hover states */
+.dark .hover\:bg-gray-100:hover {
+  background-color: #333338 !important;
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background-color: #2a2a30 !important;
+}
+
+.dark .hover\:bg-rose-50:hover {
+  background-color: #2a2028 !important;
+}
+
+/* Cards & shadows */
+.dark .shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35) !important;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .shadow-2xl {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Inputs & Forms */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #2a2a30;
+  border-color: #3a3a40;
+  color: #e8e4df;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6e6963;
+}
+
+/* Mobile menu */
+.dark .fixed.bg-white {
+  background-color: #1a1a1f !important;
+}
+
+/* Footer */
+.dark footer {
+  background-color: #16161b !important;
+  border-color: #2a2a30 !important;
+}
+
+/* Announcement bar */
+.dark .bg-gray-900 {
+  background-color: #111115 !important;
+}
+
+/* Selection */
+.dark ::selection {
+  background-color: rgba(216, 130, 157, 0.3);
+  color: #f0ece7;
 }
