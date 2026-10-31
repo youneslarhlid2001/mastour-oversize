@@ -11,7 +11,7 @@ export default function AnnouncementBar() {
     const items = [...announcements, ...announcements, ...announcements, ...announcements];
 
     return (
-        <div className="overflow-hidden bg-wine py-2 text-on-wine">
+        <div className="site-chrome overflow-hidden bg-wine py-2 text-on-wine">
             <p className="sr-only">{announcements.join('. ')}</p>
             <div className="marquee label" aria-hidden="true">
                 {items.map((text, i) => (

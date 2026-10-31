@@ -352,6 +352,204 @@
     transform: rotate(45deg);
   }
 
+  /* Cabine d'essayage (fiche produit) : la page porte son propre en-tête */
+  body:has(.fitting) .site-chrome {
+    display: none !important;
+  }
+
+  .fitting {
+    --fit-panel: #e3e3e1;
+    --fit-card: #ffffff;
+    --fit-chip: #ececea;
+    --fit-ink: #141414;
+    --fit-soft: #5a5a5c;
+    --fit-accent: #ffde3b;
+    --fit-glass: rgb(244 244 242 / 0.62);
+    --fit-floor: rgb(255 255 255 / 0.55);
+    color: var(--fit-ink);
+  }
+
+  .dark .fitting {
+    --fit-panel: #232325;
+    --fit-card: #313134;
+    --fit-chip: #3f3f43;
+    --fit-ink: #f4f4f2;
+    --fit-soft: #b7b7ba;
+    --fit-glass: rgb(49 49 52 / 0.66);
+    --fit-floor: rgb(190 190 196 / 0.34);
+  }
+
+  .fit-panel {
+    padding: clamp(0.75rem, 2vw, 1.75rem);
+    border-radius: 1.75rem;
+    background: var(--fit-panel);
+    box-shadow:
+      0 0 0 6px rgb(120 120 120 / 0.55),
+      0 30px 80px rgb(0 0 0 / 0.35);
+  }
+
+  .fit-card {
+    padding: 1rem;
+    border-radius: 1.25rem;
+    background: var(--fit-card);
+  }
+
+  .fit-floor {
+    background: radial-gradient(closest-side, var(--fit-floor), transparent);
+  }
+
+  .fit-glass {
+    background: var(--fit-glass);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  .fit-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    background: var(--fit-accent);
+    color: #141414;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.2s;
+  }
+
+  .fit-cta:hover {
+    filter: brightness(0.94);
+  }
+
+  .fit-cta:active {
+    transform: translateY(1px);
+  }
+
+  .fit-round {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: var(--fit-card);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .fit-round:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .fit-input {
+    width: 4.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--fit-chip);
+    font-weight: 400;
+    text-align: center;
+  }
+
+  .fit-input::placeholder {
+    color: var(--fit-soft);
+    opacity: 0.6;
+  }
+
+  .fit-size {
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.625rem;
+    border-radius: 999px;
+    background: var(--fit-chip);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .fit-size.is-on {
+    background: var(--fit-ink);
+    color: var(--fit-card);
+  }
+
+  .fit-size:disabled {
+    color: var(--fit-soft);
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  .fit-spot {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: rgb(229 196 40 / 0.72);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .fit-spot:hover,
+  .fit-spot[aria-pressed="true"] {
+    background: rgb(255 222 59 / 0.92);
+    box-shadow: 0 0 0 5px rgb(255 222 59 / 0.3);
+  }
+
+  .fit-accordion {
+    border-radius: 1.125rem;
+    background: var(--fit-chip);
+    padding-bottom: 0.25rem;
+  }
+
+  .fit-accordion:not([open]) {
+    padding-bottom: 0;
+  }
+
+  .fit-accordion > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .fit-accordion .chevron {
+    transition: transform 0.25s;
+  }
+
+  .fit-accordion[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Tout doit tenir dans l'écran sur ordinateur ; le mobile garde des cibles plus grandes */
+  @media (min-width: 1024px) {
+    .fit-card {
+      padding: 0.875rem 1rem;
+    }
+
+    .fit-cta {
+      min-height: 2.5rem;
+    }
+
+    .fit-input {
+      height: 2rem;
+    }
+
+    .fit-size {
+      min-width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .fit-accordion > summary {
+      min-height: 2rem;
+    }
+  }
+
   /* Pages légales */
   .legal {
     font-size: 0.9375rem;

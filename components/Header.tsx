@@ -29,7 +29,7 @@ export default function Header() {
 
     return (
         <>
-            <header className="page-x sticky top-0 z-40 grid h-16 grid-cols-[1fr_auto_1fr] items-center bg-paper/90 backdrop-blur-md">
+            <header className="site-chrome page-x sticky top-0 z-40 grid h-16 grid-cols-[1fr_auto_1fr] items-center bg-paper/90 backdrop-blur-md">
                 <div className="flex items-center">
                     <button
                         type="button"

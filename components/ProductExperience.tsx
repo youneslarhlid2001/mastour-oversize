@@ -2,243 +2,388 @@
 
 import { Suspense, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Check, Instagram, Plus } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, Instagram, Menu, Moon, ShoppingBag, Sun, X } from 'lucide-react';
 import { Product } from '@/types';
+import FittingStage from '@/components/FittingStage';
 import Garment from '@/components/Garment';
+import HangerTray from '@/components/HangerTray';
+import Logo from '@/components/Logo';
+import MeasuresCard from '@/components/MeasuresCard';
 import SizeGuide from '@/components/SizeGuide';
-import { currentPrice, discountPercent, formatPrice, hasPhoto, inStock } from '@/lib/catalog';
-import { backdropFor, colorHex } from '@/lib/colors';
-import { addToSelection, buildOrderMessage, copyText } from '@/lib/selection';
+import { useTheme } from '@/components/ThemeProvider';
+import { currentPrice, discountPercent, formatPrice, hasPhoto, inStock, products } from '@/lib/catalog';
+import { colorHex } from '@/lib/colors';
+import { fallNote, Measures, measuresAreValid, recommendSize, useMeasures } from '@/lib/fitting';
+import { addToSelection, buildOrderMessage, copyText, setSelectionOpen, useSelection } from '@/lib/selection';
 import { lengthFor, sizeLabel } from '@/lib/sizes';
-import { INSTAGRAM_DM_URL } from '@/lib/site';
+import { FREE_SHIPPING_FROM, INSTAGRAM_DM_URL, NAV_LINKS } from '@/lib/site';
+
+interface Fit {
+    productId: string;
+    color?: string;
+    size: string | null;
+}
+
+function productById(id: string) {
+    return products.find((p) => p.id === id) as Product;
+}
+
+function isOut(product: Product, size: string) {
+    return product.stock?.[size] === 0;
+}
+
+function SiteMenu() {
+    const { theme, toggleTheme } = useTheme();
+    return (
+        <details className="relative">
+            <summary className="fit-round" aria-label="Menu du site">
+                <Menu size={18} strokeWidth={1.6} />
+            </summary>
+            <nav className="absolute right-0 top-full z-40 mt-2 w-48 rounded-2xl bg-[var(--fit-card)] p-2 text-sm shadow-lg" aria-label="Navigation principale">
+                {[{ href: '/', label: 'Accueil' }, ...NAV_LINKS].map((link) => (
+                    <Link key={link.href} href={link.href} className="block rounded-xl px-3 py-2 hover:bg-[var(--fit-chip)]">
+                        {link.label}
+                    </Link>
+                ))}
+                <button type="button" onClick={toggleTheme} className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2 text-left hover:bg-[var(--fit-chip)]">
+                    {theme === 'dark' ? <Sun size={15} strokeWidth={1.6} /> : <Moon size={15} strokeWidth={1.6} />}
+                    {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+                </button>
+            </nav>
+        </details>
+    );
+}
+
+function Accordion({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <details className="fit-accordion">
+            <summary>
+                {title}
+                <ChevronDown size={16} strokeWidth={1.8} className="chevron shrink-0" />
+            </summary>
+            <div className="space-y-2 px-3.5 pb-1 pt-2 text-[0.8125rem] leading-relaxed text-[var(--fit-soft)]">{children}</div>
+        </details>
+    );
+}
 
 function Experience({ product, initialColor }: { product: Product; initialColor?: string }) {
-    const onlySize = product.sizes.length === 1 ? product.sizes[0] : null;
-    const [color, setColor] = useState(initialColor ?? product.colors?.[0]);
-    const [size, setSize] = useState<string | null>(onlySize);
+    const selection = useSelection();
+    const measures = useMeasures();
+
+    const [fits, setFits] = useState<Fit[]>([{
+        productId: product.id,
+        color: initialColor ?? product.colors?.[0],
+        size: product.sizes.length === 1 ? product.sizes[0] : null,
+    }]);
+    const [activeId, setActiveId] = useState(product.id);
     const [missingSize, setMissingSize] = useState(false);
     const [guideOpen, setGuideOpen] = useState(false);
-    const [activeImage, setActiveImage] = useState(0);
     const [copied, setCopied] = useState(false);
 
-    const discount = discountPercent(product);
-    const available = inStock(product);
-    const length = lengthFor(size);
+    const fit = fits.find((f) => f.productId === activeId) ?? fits[0];
+    const active = productById(fit.productId);
+    const discount = discountPercent(active);
+    const length = lengthFor(fit.size);
+    const hasMeasures = measuresAreValid(measures);
+    const recommended = hasMeasures ? recommendSize(active.sizes, measures) : null;
+
+    // Garde l'adresse et le titre alignés sur l'article affiché, pour pouvoir le partager
+    const show = (id: string) => {
+        setActiveId(id);
+        setMissingSize(false);
+        window.history.replaceState(null, '', `/articles/${id}`);
+        document.title = `${productById(id).name} | Mastour Oversize`;
+    };
+
+    const update = (patch: Partial<Fit>) => {
+        setFits((list) => list.map((f) => (f.productId === fit.productId ? { ...f, ...patch } : f)));
+    };
+
+    const pick = (id: string) => {
+        if (!fits.some((f) => f.productId === id)) {
+            const next = productById(id);
+            const size = next.sizes.length === 1
+                ? next.sizes[0]
+                : hasMeasures ? recommendSize(next.sizes, measures) : null;
+            setFits((list) => [...list, {
+                productId: id,
+                color: next.colors?.[0],
+                size: size && !isOut(next, size) ? size : null,
+            }]);
+        }
+        show(id);
+    };
+
+    const remove = (id: string) => {
+        const rest = fits.filter((f) => f.productId !== id);
+        setFits(rest);
+        if (id === activeId) show(rest[rest.length - 1].productId);
+    };
+
+    const confirmMeasures = (values: Measures) => {
+        const size = recommendSize(active.sizes, values);
+        if (size && !isOut(active, size)) {
+            update({ size });
+            setMissingSize(false);
+        }
+    };
+
+    // Toutes les pièces doivent avoir une taille : on affiche la première qui en manque une
+    const allSized = () => {
+        const unsized = fits.find((f) => !f.size);
+        if (!unsized) return true;
+        show(unsized.productId);
+        setMissingSize(true);
+        return false;
+    };
 
     const add = () => {
-        if (!size) {
-            setMissingSize(true);
-            return;
-        }
-        addToSelection({ productId: product.id, size, color });
+        if (!allSized()) return;
+        fits.forEach((f) => addToSelection({ productId: f.productId, size: f.size as string, color: f.color }));
     };
 
     const order = (e: React.MouseEvent) => {
-        if (!size) {
+        if (!allSized()) {
             e.preventDefault();
-            setMissingSize(true);
             return;
         }
-        copyText(buildOrderMessage([{ productId: product.id, size, color }]));
+        copyText(buildOrderMessage(fits.map((f) => ({ productId: f.productId, size: f.size as string, color: f.color }))));
         setCopied(true);
         setTimeout(() => setCopied(false), 8000);
     };
 
+    const note = fallNote(active, fit.size, measures);
+
     return (
-        <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-            {/* Planche */}
-            <div className="lg:sticky lg:top-16 lg:h-[calc(100dvh-8.5rem)]">
-                <div
-                    className="grain relative aspect-[4/5] h-full w-full overflow-hidden transition-colors duration-500 lg:aspect-auto"
-                    style={{ background: backdropFor(color) }}
-                >
-                    {hasPhoto(product) ? (
-                        <Image
-                            src={product.images[activeImage]}
-                            alt={product.name}
-                            fill
-                            priority
-                            sizes="(max-width: 1024px) 100vw, 55vw"
-                            className="object-cover"
-                        />
-                    ) : (
-                        <Garment
-                            productId={product.id}
-                            category={product.category}
-                            color={color}
-                            label={`${product.name}, coloris ${color ?? ''}`}
-                            className="absolute inset-y-[3%] left-1/2 h-[96%] w-auto -translate-x-1/2"
-                        />
-                    )}
-
-                    {length && (
-                        <div className="absolute bottom-[4%] right-[5%] top-[11%] z-10 flex items-center gap-2">
-                            <span className="label rounded-sm bg-paper px-1.5 py-1 text-[#2b1216]">Long. {length}&nbsp;cm</span>
-                            <span className="stitch-v h-full" />
-                        </div>
-                    )}
-
-                    {discount > 0 && <span className="tag absolute left-4 top-4 z-10">-{discount}&nbsp;%</span>}
-
-                    {hasPhoto(product) && product.images.length > 1 && (
-                        <div className="absolute bottom-4 left-4 z-10 flex gap-2">
-                            {product.images.map((src, i) => (
-                                <button
-                                    key={src + i}
-                                    type="button"
-                                    onClick={() => setActiveImage(i)}
-                                    aria-label={`Vue ${i + 1}`}
-                                    aria-pressed={i === activeImage}
-                                    className={`relative h-16 w-12 cursor-pointer overflow-hidden border ${i === activeImage ? 'border-thread' : 'border-paper'}`}
-                                >
-                                    <Image src={src} alt="" fill sizes="48px" className="object-cover" />
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
+        <section className="fitting relative isolate flex min-h-dvh items-center overflow-clip px-2 py-3 sm:px-6 lg:px-10 lg:py-8">
+            <div className="absolute inset-0 -z-10" aria-hidden="true">
+                <Image src="/images/philosophy.webp" alt="" fill sizes="100vw" quality={40} className="scale-125 object-cover blur-3xl" />
+                <div className="absolute inset-0 bg-black/25 dark:bg-black/60" />
             </div>
 
-            {/* Fiche */}
-            <div className="page-x py-8 lg:py-14">
-                <p className="label text-thread">{product.category}</p>
-                <h1 className="display mt-3 text-[clamp(2.75rem,5.4vw,5.25rem)] leading-[0.94]">{product.name}</h1>
-
-                <p className="mt-5 flex flex-wrap items-baseline gap-3 font-mono text-lg">
-                    {discount > 0 && (
-                        <>
-                            <span className="sr-only">Prix réduit&nbsp;: </span>
-                            <del className="text-base text-ink-soft">{formatPrice(product.price)}</del>
-                        </>
-                    )}
-                    <span className={discount > 0 ? 'text-thread' : ''}>{formatPrice(currentPrice(product))}</span>
-                    <span className="label ml-auto text-ink-soft">{available ? 'En stock' : 'Épuisé'}</span>
-                </p>
-
-                <p className="mt-6 max-w-[58ch] leading-relaxed text-ink-soft">{product.description}</p>
-
-                {product.colors && product.colors.length > 0 && (
-                    <fieldset className="mt-8">
-                        <legend className="label mb-3">
-                            Coloris <span className="text-ink-soft">/ {color}</span>
-                        </legend>
-                        <div className="-ml-1 flex flex-wrap gap-1">
-                            {product.colors.map((c) => (
-                                <button
-                                    key={c}
-                                    type="button"
-                                    onClick={() => setColor(c)}
-                                    aria-pressed={c === color}
-                                    aria-label={c}
-                                    title={c}
-                                    className="flex h-11 w-11 cursor-pointer items-center justify-center"
-                                >
-                                    <span
-                                        className={`block h-7 w-7 rounded-full border border-line transition-shadow ${c === color ? 'shadow-[0_0_0_3px_var(--paper),0_0_0_4px_var(--ink)]' : ''}`}
-                                        style={{ background: colorHex(c) }}
-                                    />
-                                </button>
-                            ))}
-                        </div>
-                        {!hasPhoto(product) && (
-                            <p className="mt-2 text-xs text-ink-soft">Illustration du modèle. Le coloris réel peut légèrement varier.</p>
-                        )}
-                    </fieldset>
-                )}
-
-                <fieldset className="mt-7">
-                    <div className="mb-3 flex items-baseline justify-between">
-                        <legend className="label">Taille</legend>
-                        <button type="button" onClick={() => setGuideOpen(true)} className="stitch-link cursor-pointer text-sm">
-                            Guide des tailles
+            <div className="fit-panel mx-auto w-full max-w-[92rem]">
+                <header className="relative z-30 grid grid-cols-[1fr_auto] items-start gap-2 md:grid-cols-[1fr_auto_1fr]">
+                    <div>
+                        <p className="text-lg font-medium leading-tight sm:text-2xl">Cabine d’essayage</p>
+                        <Link href="/articles" className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium hover:underline">
+                            <ChevronLeft size={16} strokeWidth={1.8} /> Retour
+                        </Link>
+                    </div>
+                    <Link href="/" aria-label="Mastour Oversize, accueil" className="order-first col-span-2 mb-1 text-center md:order-none md:col-span-1 md:mb-0">
+                        <Logo className="text-base md:text-xl" />
+                    </Link>
+                    <div className="flex items-center justify-end gap-2">
+                        <button type="button" onClick={() => setSelectionOpen(true)} className="flex h-10 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-[var(--fit-card)] px-3 text-sm font-medium sm:px-4">
+                            <ShoppingBag size={16} strokeWidth={1.6} />
+                            Sélection ({selection.items.length})
                         </button>
+                        <SiteMenu />
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                        {product.sizes.map((s) => {
-                            const count = product.stock?.[s];
-                            const out = count === 0;
-                            return (
-                                <button
-                                    key={s}
-                                    type="button"
-                                    disabled={out}
-                                    aria-pressed={s === size}
-                                    onClick={() => { setSize(s); setMissingSize(false); }}
-                                    className={`h-12 min-w-14 cursor-pointer border px-4 font-mono text-[0.8125rem] transition-colors disabled:cursor-not-allowed disabled:text-ink-soft disabled:line-through ${s === size ? 'border-ink bg-ink text-paper' : 'border-line hover:border-ink'}`}
-                                >
-                                    {sizeLabel(s)}
-                                </button>
-                            );
-                        })}
+                </header>
+
+                <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_minmax(23rem,1fr)] lg:gap-4">
+                    {/* Occupe la hauteur de la colonne de droite, sans dépasser l'écran quand un accordéon s'ouvre */}
+                    <div className="lg:min-h-[36rem]">
+                        <div className="relative h-[35rem] overflow-hidden sm:h-[42rem] lg:sticky lg:top-4 lg:h-[min(100%,calc(100dvh-2rem))]">
+                            <FittingStage key={active.id} product={active} color={fit.color} />
+                            <HangerTray fittingIds={fits.map((f) => f.productId)} activeId={active.id} onPick={pick} />
+                        </div>
                     </div>
-                    <p className={`mt-2 min-h-5 text-sm ${missingSize ? 'text-thread' : 'text-ink-soft'}`} aria-live="polite">
-                        {missingSize && 'Choisissez votre taille pour continuer.'}
-                        {!missingSize && size && product.stock?.[size] !== undefined && product.stock[size] <= 4 && `Plus que ${product.stock[size]} en ${sizeLabel(size)}.`}
-                    </p>
-                </fieldset>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <a
-                        href={INSTAGRAM_DM_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={order}
-                        className="btn"
-                    >
-                        <Instagram size={18} strokeWidth={1.5} /> Commander
-                    </a>
-                    <button type="button" onClick={add} className="btn btn-ghost">
-                        <Plus size={18} strokeWidth={1.5} /> Ajouter à ma sélection
-                    </button>
-                </div>
-
-                <p className="mt-3 flex items-start gap-2 text-sm text-ink-soft" aria-live="polite">
-                    {copied ? (
-                        <>
-                            <Check size={16} className="mt-0.5 shrink-0 text-thread" />
-                            Message copié. Collez-le dans la conversation Instagram qui vient de s’ouvrir.
-                        </>
-                    ) : (
-                        'Votre message de commande est copié automatiquement. Il ne reste qu’à le coller sur Instagram.'
-                    )}
-                </p>
-
-                <div className="mt-10 border-t border-line">
-                    {[
-                        ['Matière', product.material],
-                        ['Entretien', product.careInstructions],
-                        ['Poids', product.weight],
-                        ['Référence', product.id],
-                    ].filter(([, value]) => value).map(([name, value]) => (
-                        <div key={name} className="grid grid-cols-[6.5rem_1fr] gap-4 border-b border-line py-3 text-sm">
-                            <span className="label pt-0.5 text-ink-soft">{name}</span>
-                            <span>{value}</span>
+                    <div className="flex flex-col gap-3 lg:gap-4">
+                        <div className="order-2 lg:order-1">
+                            <MeasuresCard
+                                onConfirm={confirmMeasures}
+                                result={hasMeasures && (
+                                    recommended ? (
+                                        <p>
+                                            Taille conseillée pour ce modèle : <strong className="font-semibold text-[var(--fit-ink)]">{sizeLabel(recommended)}</strong>
+                                            {isOut(active, recommended) && ', épuisée pour le moment'}.
+                                            {note && <> {note}</>}
+                                        </p>
+                                    ) : (
+                                        <p>Vos mesures dépassent nos tailles pour ce modèle. Écrivez-nous sur Instagram, nous vous orienterons.</p>
+                                    )
+                                )}
+                            />
                         </div>
-                    ))}
-                    <details className="border-b border-line">
-                        <summary className="flex items-center justify-between py-3 text-sm">
-                            <span className="label text-ink-soft">Livraison et retours</span>
-                            <Plus size={16} strokeWidth={1.5} className="plus" />
-                        </summary>
-                        <div className="space-y-2 pb-4 text-sm leading-relaxed text-ink-soft">
-                            <p>Expédition sous 24&nbsp;h après paiement, puis 48 à 72&nbsp;h ouvrées en France métropolitaine.</p>
-                            <p>Livraison offerte dès 80&nbsp;€ en France métropolitaine. Livraison en Europe sur devis.</p>
-                            <p>Retour ou échange de taille sous 14 jours, article non porté et avec ses étiquettes. Frais de retour à votre charge.</p>
+
+                        <div className="fit-card order-1 flex-1 lg:order-2">
+                            <p className="text-lg font-medium leading-tight">À l’essayage</p>
+
+                            <div className="mt-3 grid grid-cols-[4.75rem_minmax(0,1fr)] gap-3 sm:grid-cols-[5.5rem_minmax(0,1fr)] sm:gap-4">
+                                <ul className="flex flex-col gap-2">
+                                    {fits.map((f) => {
+                                        const p = productById(f.productId);
+                                        const current = f.productId === active.id;
+                                        return (
+                                            <li key={f.productId} className="relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => show(f.productId)}
+                                                    aria-label={`Voir ${p.name}`}
+                                                    aria-current={current}
+                                                    className={`relative block aspect-square w-full cursor-pointer overflow-hidden rounded-2xl bg-[var(--fit-chip)] ${current ? 'ring-2 ring-[var(--fit-ink)]' : ''}`}
+                                                >
+                                                    {hasPhoto(p) ? (
+                                                        <Image src={p.images[0]} alt="" fill sizes="88px" className="object-cover" />
+                                                    ) : (
+                                                        <Garment productId={p.id} category={p.category} color={f.color} className="mx-auto h-full w-auto p-1" />
+                                                    )}
+                                                </button>
+                                                {current && fits.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => remove(f.productId)}
+                                                        aria-label={`Retirer ${p.name} de l’essayage`}
+                                                        className="absolute -right-1.5 -top-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-[var(--fit-ink)] text-[var(--fit-card)]"
+                                                    >
+                                                        <X size={14} strokeWidth={2.4} />
+                                                    </button>
+                                                )}
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+
+                                <div className="min-w-0">
+                                    <h1 className="font-sans text-[0.9375rem] font-semibold leading-snug">{active.name}</h1>
+                                    <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[0.9375rem] font-medium">
+                                        {discount > 0 && (
+                                            <>
+                                                <span className="sr-only">Prix réduit&nbsp;: </span>
+                                                <del className="text-[0.8125rem] font-normal text-[var(--fit-soft)]">{formatPrice(active.price)}</del>
+                                            </>
+                                        )}
+                                        {formatPrice(currentPrice(active))}
+                                        {discount > 0 && <span className="text-xs">-{discount}&nbsp;%</span>}
+                                        <span className="ml-auto text-xs font-normal text-[var(--fit-soft)]">{inStock(active) ? 'En stock' : 'Épuisé'}</span>
+                                    </p>
+
+                                    {active.colors && active.colors.length > 0 && (
+                                        <fieldset className="mt-3">
+                                            <legend className="text-[0.8125rem] font-medium">Coloris</legend>
+                                            <div className="mt-1.5 flex flex-wrap items-start gap-1.5">
+                                                {active.colors.map((c) => (
+                                                    <button
+                                                        key={c}
+                                                        type="button"
+                                                        onClick={() => update({ color: c })}
+                                                        aria-pressed={c === fit.color}
+                                                        className="flex w-14 cursor-pointer flex-col items-center text-center text-[0.6875rem] leading-tight"
+                                                    >
+                                                        <span className={`mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-full ${c === fit.color ? 'ring-[1.5px] ring-[var(--fit-ink)]' : ''}`}>
+                                                            <span className="block h-6 w-6 rounded-full border border-black/15" style={{ background: colorHex(c) }} />
+                                                        </span>
+                                                        {c}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </fieldset>
+                                    )}
+
+                                    <fieldset className="mt-3">
+                                        <div className="flex items-baseline justify-between gap-2">
+                                            <legend className="text-[0.8125rem] font-medium">Taille</legend>
+                                            <span className="flex gap-3 text-xs">
+                                                <a href="#mesures" className="underline underline-offset-2 lg:hidden">Mes mesures</a>
+                                                <button type="button" onClick={() => setGuideOpen(true)} className="cursor-pointer underline underline-offset-2">
+                                                    Guide des tailles
+                                                </button>
+                                            </span>
+                                        </div>
+                                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                                            {active.sizes.map((s) => (
+                                                <button
+                                                    key={s}
+                                                    type="button"
+                                                    disabled={isOut(active, s)}
+                                                    aria-pressed={s === fit.size}
+                                                    onClick={() => { update({ size: s }); setMissingSize(false); }}
+                                                    className={`fit-size ${s === fit.size ? 'is-on' : ''}`}
+                                                >
+                                                    {sizeLabel(s)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className={`mt-1.5 text-xs empty:hidden ${missingSize ? 'font-medium text-[#b5351a] dark:text-[#f0693f]' : 'text-[var(--fit-soft)]'}`} aria-live="polite">
+                                            {missingSize && `Choisissez une taille pour ${active.name}.`}
+                                            {!missingSize && fit.size && active.stock?.[fit.size] !== undefined && active.stock[fit.size] <= 4 && `Plus que ${active.stock[fit.size]} en ${sizeLabel(fit.size)}. `}
+                                            {!missingSize && length && `Longueur ${length} cm.`}
+                                        </p>
+                                    </fieldset>
+
+                                    <div className="mt-2 space-y-1.5">
+                                        <Accordion title="Description et matière">
+                                            <p>{active.description}</p>
+                                            {active.material && <p><strong className="font-medium text-[var(--fit-ink)]">Matière :</strong> {active.material}</p>}
+                                            {active.careInstructions && <p><strong className="font-medium text-[var(--fit-ink)]">Entretien :</strong> {active.careInstructions}</p>}
+                                            {active.weight && <p><strong className="font-medium text-[var(--fit-ink)]">Poids :</strong> {active.weight}</p>}
+                                            <p className="break-words"><strong className="font-medium text-[var(--fit-ink)]">Référence :</strong> {active.id}</p>
+                                        </Accordion>
+                                        {active.stock && (
+                                            <Accordion title="Disponibilité">
+                                                <ul>
+                                                    {active.sizes.map((s) => {
+                                                        const count = active.stock?.[s] ?? 0;
+                                                        return (
+                                                            <li key={s} className="flex justify-between gap-3">
+                                                                <span>{sizeLabel(s)}</span>
+                                                                <span>{count === 0 ? 'Épuisé' : count <= 4 ? `Plus que ${count}` : 'En stock'}</span>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </Accordion>
+                                        )}
+                                        <Accordion title="Livraison et retours">
+                                            <p>Expédition sous 24&nbsp;h après paiement, puis 48 à 72&nbsp;h ouvrées en France métropolitaine.</p>
+                                            <p>Livraison offerte dès {FREE_SHIPPING_FROM}&nbsp;€ en France métropolitaine. Livraison en Europe sur devis.</p>
+                                            <p>Retour ou échange de taille sous 14 jours, article non porté et avec ses étiquettes. Frais de retour à votre charge.</p>
+                                        </Accordion>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" onClick={add} className="fit-cta mt-4 w-full">
+                                Ajouter à ma sélection ({fits.length})
+                            </button>
+                            <a
+                                href={INSTAGRAM_DM_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={order}
+                                className="mt-2 flex items-center justify-center gap-2 py-1 text-[0.8125rem] font-medium hover:underline"
+                            >
+                                <Instagram size={15} strokeWidth={1.6} /> Commander sur Instagram
+                            </a>
+                            <p className="text-center text-xs leading-snug text-[var(--fit-soft)]" aria-live="polite">
+                                {copied ? (
+                                    <span className="inline-flex items-start gap-1.5">
+                                        <Check size={14} className="mt-px shrink-0" />
+                                        Message copié. Collez-le dans la conversation Instagram qui vient de s’ouvrir.
+                                    </span>
+                                ) : (
+                                    !hasPhoto(active) && 'Illustration du modèle. Le coloris réel peut légèrement varier.'
+                                )}
+                            </p>
                         </div>
-                    </details>
+                    </div>
                 </div>
             </div>
 
-            <SizeGuide isOpen={guideOpen} onClose={() => setGuideOpen(false)} highlight={size} />
-        </div>
+            <SizeGuide isOpen={guideOpen} onClose={() => setGuideOpen(false)} highlight={fit.size} />
+        </section>
     );
 }
 
 function WithColorParam({ product }: { product: Product }) {
     const requested = useSearchParams().get('coloris') ?? undefined;
-    const initial = requested && product.colors?.includes(requested) ? requested : undefined;
-    return <Experience key={initial} product={product} initialColor={initial} />;
+    // Lu une seule fois : l'adresse change ensuite quand on essaie un autre article
+    const [initial] = useState(requested && product.colors?.includes(requested) ? requested : undefined);
+    return <Experience product={product} initialColor={initial} />;
 }
 
 export default function ProductExperience({ product }: { product: Product }) {

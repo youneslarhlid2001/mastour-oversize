@@ -293,15 +293,44 @@ function DetailLayer({ detail }: { detail?: Detail }) {
     return null;
 }
 
+// Silhouette sans visage de la cabine d'essayage : pieds sous l'ourlet, voile sur les épaules
+function MannequinFeet() {
+    return (
+        <g fill="#8d7767">
+            <path d="M156 582 L190 582 L192 612 C192 622 146 624 146 612 Z" />
+            <path d="M210 582 L244 582 L254 612 C254 624 208 622 208 612 Z" />
+        </g>
+    );
+}
+
+function MannequinHead() {
+    return (
+        <>
+            <path
+                d="M200 -60 C164 -60 148 -30 150 2 C151 28 148 58 132 92 C168 112 232 112 268 92 C252 58 249 28 250 2 C252 -30 236 -60 200 -60 Z"
+                fill="#d8c8b4"
+            />
+            <path
+                d="M200 -60 C164 -60 148 -30 150 2 C151 28 148 58 132 92 C168 112 232 112 268 92 C252 58 249 28 250 2 C252 -30 236 -60 200 -60 Z"
+                fill="url(#mo-sleeve)"
+                fillOpacity="0.5"
+            />
+            <ellipse cx="200" cy="-6" rx="30" ry="38" fill="#e9d2bd" />
+        </>
+    );
+}
+
 interface GarmentProps {
     productId?: string;
     category?: string;
     color?: string;
     className?: string;
     label?: string;
+    // Sur le mannequin de la cabine plutôt que sur le cintre
+    worn?: boolean;
 }
 
-export default function Garment({ productId, category, color, className = '', label }: GarmentProps) {
+export default function Garment({ productId, category, color, className = '', label, worn = false }: GarmentProps) {
     const figure = (productId && FIGURES[productId]) || { silhouette: BY_CATEGORY[category ?? ''] ?? 'robe' };
     const { silhouette, detail } = figure as { silhouette: Silhouette; detail?: Detail };
 
@@ -312,16 +341,22 @@ export default function Garment({ productId, category, color, className = '', la
 
     return (
         <svg
-            viewBox="0 0 400 600"
+            viewBox={worn ? '0 -70 400 720' : '0 0 400 600'}
             className={`garment ${className}`}
             style={style}
             role={label ? 'img' : undefined}
             aria-label={label}
             aria-hidden={label ? undefined : true}
         >
-            {/* Cintre */}
-            <path d="M200 74 V50 C200 42 212 40 212 30 C212 20 196 18 191 27" fill="none" stroke="#2b1216" strokeOpacity="0.7" strokeWidth="2" strokeLinecap="round" />
-            <path d="M200 52 L128 92 M200 52 L272 92" fill="none" stroke="#2b1216" strokeOpacity="0.7" strokeWidth="2" strokeLinecap="round" />
+            {worn ? (
+                <MannequinFeet />
+            ) : (
+                <>
+                    {/* Cintre */}
+                    <path d="M200 74 V50 C200 42 212 40 212 30 C212 20 196 18 191 27" fill="none" stroke="#2b1216" strokeOpacity="0.7" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M200 52 L128 92 M200 52 L272 92" fill="none" stroke="#2b1216" strokeOpacity="0.7" strokeWidth="2" strokeLinecap="round" />
+                </>
+            )}
             <g style={{ filter: 'drop-shadow(0 14px 14px rgb(43 18 22 / 0.26))' }}>
                 {silhouette === 'robe' && <Robe />}
                 {silhouette === 'papillon' && <Papillon />}
@@ -332,6 +367,7 @@ export default function Garment({ productId, category, color, className = '', la
                 {silhouette === 'sporty' && <Sporty />}
                 <DetailLayer detail={detail} />
             </g>
+            {worn && <MannequinHead />}
         </svg>
     );
 }

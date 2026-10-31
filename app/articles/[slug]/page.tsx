@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { Metadata } from 'next';
 import ProductCard from '@/components/ProductCard';
 import ProductExperience from '@/components/ProductExperience';
@@ -68,13 +67,7 @@ export default async function ProductPage({ params }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <nav className="page-x label flex gap-2 py-3 text-ink-soft" aria-label="Fil d’Ariane">
-                <Link href="/articles" className="hover:text-thread">Collection</Link>
-                <span aria-hidden="true">/</span>
-                <Link href={`/articles?categorie=${product.category}`} className="hover:text-thread">{product.category}</Link>
-            </nav>
-
-            <ProductExperience product={product} />
+            <ProductExperience key={product.id} product={product} />
 
             <section className="border-t border-line py-14 md:py-20" aria-labelledby="related-title">
                 <div className="page-x">
