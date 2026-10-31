@@ -1,22 +1,24 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/components/FAQAccordion';
+import PageIntro from '@/components/PageIntro';
+import { INSTAGRAM_DM_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
-    title: 'FAQ - Questions Fréquentes | Mastour Oversize',
+    title: 'Questions fréquentes',
     description: 'Retrouvez les réponses à vos questions sur les commandes, la livraison, les retours, les tailles et le paiement chez Mastour Oversize.',
 };
 
 const faqCategories = [
     {
-        title: '🛒 Commander',
+        title: 'Commander',
         questions: [
             {
                 question: 'Comment passer une commande ?',
-                answer: 'Les commandes se font exclusivement via Instagram. Rendez-vous sur la fiche produit qui vous intéresse, sélectionnez votre taille, puis cliquez sur « Commander sur Instagram ». Un message pré-rempli avec la référence et la taille sera prêt à envoyer. Vous pouvez aussi nous contacter directement sur @mastouroversize.',
+                answer: 'Les commandes se font exclusivement via Instagram. Rendez-vous sur la fiche produit qui vous intéresse, sélectionnez votre taille, puis cliquez sur « Commander ». Le message avec la référence, le coloris et la taille est copié : collez-le dans la conversation Instagram qui s’ouvre. Vous pouvez aussi nous contacter directement sur @mastouroversize.',
             },
             {
                 question: 'Puis-je commander plusieurs articles à la fois ?',
-                answer: 'Bien sûr ! Envoyez-nous un seul message avec les références et tailles de tous les articles souhaités. Nous calculerons le total et les frais de livraison en conséquence.',
+                answer: 'Bien sûr ! Ajoutez vos pièces à « Ma sélection » : un seul message regroupe les références et tailles de tous les articles souhaités. Nous calculerons le total et les frais de livraison en conséquence.',
             },
             {
                 question: 'Est-ce que je peux réserver un article ?',
@@ -29,7 +31,7 @@ const faqCategories = [
         ],
     },
     {
-        title: '📦 Livraison',
+        title: 'Livraison',
         questions: [
             {
                 question: 'Quels sont les délais de livraison ?',
@@ -50,15 +52,15 @@ const faqCategories = [
         ],
     },
     {
-        title: '📏 Tailles & Guide',
+        title: 'Tailles & Guide',
         questions: [
             {
                 question: 'Comment choisir ma taille ?',
-                answer: 'Un guide des tailles est disponible sur chaque fiche produit (cliquez sur « 📏 Guide des tailles »). Il contient un tableau de mesures détaillé (poitrine, taille, hanches, longueur) et des conseils pour bien vous mesurer.',
+                answer: 'Un guide des tailles est disponible sur chaque fiche produit (lien « Guide des tailles »). Il contient un tableau de mesures détaillé (poitrine, taille, hanches, longueur) et des conseils pour bien vous mesurer.',
             },
             {
-                question: 'Que signifie « One Size » ?',
-                answer: 'Les articles « One Size » (taille unique) sont conçus avec une coupe ample qui convient généralement du S au XL. C\'est l\'avantage de la coupe oversize : elle s\'adapte à de nombreuses morphologies.',
+                question: 'Que signifie « Taille unique » ?',
+                answer: 'Les articles en taille unique sont conçus avec une coupe ample qui convient généralement du S au XL. C\'est l\'avantage de la coupe oversize : elle s\'adapte à de nombreuses morphologies.',
             },
             {
                 question: 'Je suis entre deux tailles, que faire ?',
@@ -71,7 +73,7 @@ const faqCategories = [
         ],
     },
     {
-        title: '🔄 Retours & Échanges',
+        title: 'Retours & Échanges',
         questions: [
             {
                 question: 'Puis-je retourner un article ?',
@@ -92,7 +94,7 @@ const faqCategories = [
         ],
     },
     {
-        title: '💳 Paiement',
+        title: 'Paiement',
         questions: [
             {
                 question: 'Quels modes de paiement acceptez-vous ?',
@@ -112,48 +114,29 @@ const faqCategories = [
 
 export default function FAQPage() {
     return (
-        <div className="bg-white min-h-screen py-16">
-            <div className="container mx-auto px-4 max-w-3xl">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <span className="text-rose-500 uppercase tracking-widest text-xs font-semibold mb-2 block">Aide</span>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Questions Fréquentes</h1>
-                    <p className="text-gray-500 text-sm max-w-lg mx-auto leading-relaxed">
-                        Retrouvez les réponses aux questions les plus posées. Si vous ne trouvez pas votre réponse, contactez-nous sur Instagram{' '}
-                        <a href="https://instagram.com/mastouroversize" target="_blank" rel="noopener noreferrer" className="text-rose-500 font-medium hover:underline">
-                            @mastouroversize
-                        </a>.
-                    </p>
-                </div>
+        <>
+            <PageIntro eyebrow="Aide" title={<>Questions <em className="text-thread">fréquentes</em></>} />
 
-                {/* FAQ Categories */}
-                <div className="space-y-10">
+            <div className="page-x grid gap-12 pb-20 lg:grid-cols-12">
+                <div className="space-y-12 lg:col-span-8">
                     {faqCategories.map((category) => (
                         <section key={category.title}>
-                            <h2 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-                                {category.title}
-                            </h2>
+                            <h2 className="mb-4 text-3xl md:text-4xl">{category.title}</h2>
                             <FAQAccordion questions={category.questions} />
                         </section>
                     ))}
                 </div>
 
-                {/* CTA */}
-                <div className="mt-16 text-center bg-rose-50 border border-rose-100 rounded-2xl p-8">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Vous n&apos;avez pas trouvé votre réponse ?</h3>
-                    <p className="text-sm text-gray-500 mb-6">
-                        Notre équipe vous répond en moins de 24h sur Instagram.
-                    </p>
-                    <a
-                        href="https://instagram.com/mastouroversize"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-                    >
-                        Nous contacter sur Instagram
-                    </a>
-                </div>
+                <aside className="lg:col-span-3 lg:col-start-10">
+                    <div className="bg-wine p-6 text-on-wine lg:sticky lg:top-24">
+                        <p className="font-display text-2xl leading-tight">Pas trouvé votre réponse ?</p>
+                        <p className="mt-3 text-sm opacity-90">Notre équipe vous répond en moins de 24 h sur Instagram.</p>
+                        <a href={INSTAGRAM_DM_URL} target="_blank" rel="noopener noreferrer" className="btn btn-light mt-5 w-full">
+                            Nous écrire
+                        </a>
+                    </div>
+                </aside>
             </div>
-        </div>
+        </>
     );
 }

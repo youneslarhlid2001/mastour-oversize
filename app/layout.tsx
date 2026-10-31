@@ -1,31 +1,61 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Montserrat } from "next/font/google";
+import { Amiri, Bodoni_Moda, Fragment_Mono, Instrument_Sans } from "next/font/google";
 import "./globals.css";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/Footer";
+import { GarmentDefs } from "@/components/Garment";
+import Header from "@/components/Header";
+import SelectionDrawer from "@/components/SelectionDrawer";
+import ThemeProvider from "@/components/ThemeProvider";
+import { SITE_URL } from "@/lib/site";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+  display: "swap",
+});
+
+const instrument = Instrument_Sans({
+  variable: "--font-instrument",
   subsets: ["latin"],
   display: "swap",
 });
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
+const fragment = Fragment_Mono({
+  variable: "--font-fragment",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
+});
+
+const amiri = Amiri({
+  variable: "--font-amiri",
+  weight: "400",
+  subsets: ["arabic"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
-  title: "Mastour Oversize | Mode Mastour Élégante",
-  description: "Découvrez notre collection de vêtements mastour oversize, élégants et modernes. Robes, abayas, ensembles pour femmes.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Mastour Oversize | Robes, abayas et ensembles amples",
+    template: "%s | Mastour Oversize",
+  },
+  description: "Des coupes oversize pensées pour la femme moderne, alliant pudeur et liberté de mouvement. Robes, abayas, ensembles et kimonos. Commande sur Instagram.",
+  openGraph: {
+    siteName: "Mastour Oversize",
+    locale: "fr_FR",
+    type: "website",
+    images: [{ url: "/images/og.jpg", width: 1200, height: 630 }],
+  },
+  twitter: { card: "summary_large_image" },
 };
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import AnnouncementBar from "@/components/AnnouncementBar";
-import ScrollToTop from "@/components/ScrollToTop";
-import ThemeProvider from "@/components/ThemeProvider";
-import PageTransition from "@/components/PageTransition";
-import BottomNav from "@/components/BottomNav";
+// Applique le thème avant le premier rendu pour éviter un flash
+const themeScript = `try{if(localStorage.getItem('mastour-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`;
 
 export default function RootLayout({
   children,
@@ -33,21 +63,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body
-        className={`${playfair.variable} ${montserrat.variable} antialiased font-sans bg-[#FAFAFA] text-gray-900 flex flex-col min-h-screen selection:bg-rose-200 selection:text-rose-900`}
-      >
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className={`${bodoni.variable} ${instrument.variable} ${fragment.variable} ${amiri.variable} flex min-h-screen flex-col antialiased`}>
         <ThemeProvider>
+          <GarmentDefs />
           <AnnouncementBar />
           <Header />
-          <main className="flex-grow">
-            <PageTransition>
-              {children}
-            </PageTransition>
-          </main>
-          <ScrollToTop />
+          <main className="flex-grow">{children}</main>
           <Footer />
-          <BottomNav />
+          <SelectionDrawer />
         </ThemeProvider>
       </body>
     </html>

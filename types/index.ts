@@ -21,6 +21,7 @@ export interface Promotion {
     title: string;
     description: string;
     code?: string;
-    image: string;
     link: string;
+    // false pour retirer l'offre du site sans la supprimer
+    active?: boolean;
 }

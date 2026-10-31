@@ -1,11 +1,9 @@
 import { MetadataRoute } from 'next';
-import productsData from '@/data/products.json';
-import { Product } from '@/types';
-
-const products = productsData as unknown as Product[];
+import { products } from '@/lib/catalog';
+import { SITE_URL } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://mastouroversize.com'; // User should configure this
+    const baseUrl = SITE_URL;
 
     const productUrls = products.map((product) => ({
         url: `${baseUrl}/articles/${product.id}`,

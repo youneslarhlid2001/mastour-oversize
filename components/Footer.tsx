@@ -1,63 +1,69 @@
 import Link from 'next/link';
-import { Instagram, Mail, MapPin } from 'lucide-react';
-import Logo from '@/components/Logo';
+import { CONTACT_EMAIL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/site';
+
+const columns = [
+    {
+        title: 'Boutique',
+        links: [
+            { href: '/articles', label: 'La collection' },
+            { href: '/articles?categorie=Robes', label: 'Robes' },
+            { href: '/articles?categorie=Abayas', label: 'Abayas' },
+            { href: '/articles?categorie=Ensembles', label: 'Ensembles' },
+            { href: '/articles?categorie=Kimonos', label: 'Kimonos' },
+            { href: '/promotions', label: 'Offres' },
+        ],
+    },
+    {
+        title: 'Maison',
+        links: [
+            { href: '/about', label: 'La marque' },
+            { href: '/faq', label: 'Questions fréquentes' },
+            { href: '/contact', label: 'Contact' },
+        ],
+    },
+    {
+        title: 'Légal',
+        links: [
+            { href: '/cgv', label: 'Conditions générales de vente' },
+            { href: '/rgpd', label: 'Politique de confidentialité' },
+        ],
+    },
+];
 
 export default function Footer() {
     return (
-        <footer className="bg-rose-50 text-gray-700 py-12 border-t border-rose-100">
-            <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+        <footer className="overflow-hidden bg-wine text-on-wine">
+            <div className="page-x grid gap-10 pb-10 pt-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
                 <div>
-                    <div className="mb-4">
-                        <Logo variant="full" colorScheme="rose" width={180} height={70} />
-                    </div>
-                    <p className="text-sm leading-relaxed mb-4">
-                        Vêtements mastour élégants et modernes. La qualité au service de votre modestie.
-                    </p>
-                    <div className="flex justify-center md:justify-start space-x-4">
-                        <Link href="https://instagram.com/mastouroversize" className="text-gray-500 hover:text-rose-500 transition-colors">
-                            <Instagram size={24} />
-                        </Link>
-                        <Link href="/contact" className="text-gray-500 hover:text-rose-500 transition-colors">
-                            <Mail size={24} />
-                        </Link>
+                    <p className="max-w-[17ch] font-display text-3xl leading-[1.1]">Vêtements amples, élégants et modernes.</p>
+                    <div className="mt-6 space-y-1 text-sm opacity-80">
+                        <p>Paris, France</p>
+                        <p><a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline">{CONTACT_EMAIL}</a></p>
+                        <p><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">@{INSTAGRAM_HANDLE}</a></p>
                     </div>
                 </div>
-
-                <div>
-                    <h4 className="font-semibold text-gray-800 mb-4">Liens Utiles</h4>
-                    <ul className="space-y-2 text-sm">
-                        <li><Link href="/articles" className="hover:text-rose-500 transition-colors">Nos Collections</Link></li>
-                        <li><Link href="/promotions" className="hover:text-rose-500 transition-colors">Promotions</Link></li>
-                        <li><Link href="/about" className="hover:text-rose-500 transition-colors">À propos</Link></li>
-                        <li><Link href="/contact" className="hover:text-rose-500 transition-colors">Contact</Link></li>
-                        <li><Link href="/faq" className="hover:text-rose-500 transition-colors">FAQ</Link></li>
-                        <li><Link href="/cgv" className="hover:text-rose-500 transition-colors">Mentions Légales</Link></li>
-                        <li><Link href="/rgpd" className="hover:text-rose-500 transition-colors">Politique de Confidentialité</Link></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 className="font-semibold text-gray-800 mb-4">Contact</h4>
-                    <ul className="space-y-2 text-sm">
-                        <li className="flex items-center justify-center md:justify-start gap-2">
-                            <Mail size={16} className="text-rose-500" />
-                            contact@mastouroversize.com
-                        </li>
-                        <li className="flex items-center justify-center md:justify-start gap-2">
-                            <MapPin size={16} className="text-rose-500" />
-                            Paris, France
-                        </li>
-                        <li className="mt-4">
-                            <Link href="/contact" className="inline-block bg-white border border-rose-200 text-rose-500 px-6 py-2 rounded-full text-sm font-semibold hover:bg-rose-50 transition-colors">
-                                Nous écrire
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
+                {columns.map((column) => (
+                    <div key={column.title}>
+                        <h2 className="label mb-4 font-mono opacity-70">{column.title}</h2>
+                        <ul className="space-y-2 text-sm">
+                            {column.links.map((link) => (
+                                <li key={link.href}>
+                                    <Link href={link.href} className="hover:underline">{link.label}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
             </div>
-            <div className="border-t border-rose-100 mt-8 pt-8 text-center text-xs text-gray-500">
-                &copy; {new Date().getFullYear()} Mastour Oversize. Tous droits réservés.
+
+            <div className="page-x label flex flex-wrap justify-between gap-2 pb-4 opacity-70">
+                <span>© {new Date().getFullYear()} Mastour Oversize</span>
+                <span>Prix en euros, TTC</span>
             </div>
+
+            <p className="display select-none whitespace-nowrap text-center text-[26vw] leading-[0.92]" aria-hidden="true">
+                Mastour
+            </p>
         </footer>
     );
 }

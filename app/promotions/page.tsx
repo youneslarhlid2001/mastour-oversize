@@ -1,64 +1,50 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import promotionsData from '@/data/promotions.json';
-import SectionTitle from '@/components/SectionTitle';
-import { Promotion } from '@/types';
-
-const promotions = promotionsData as Promotion[];
+import CopyCode from '@/components/CopyCode';
+import PageIntro from '@/components/PageIntro';
+import ProductCard from '@/components/ProductCard';
+import { discountPercent, products, promotions } from '@/lib/catalog';
 
 export const metadata: Metadata = {
-    title: 'Promotions - Mastour Oversize',
-    description: 'Profitez de nos offres exceptionnelles sur les robes, abayas et ensembles mastour.',
+    title: 'Offres',
+    description: 'Les offres en cours et les pièces à prix réduit chez Mastour Oversize.',
+    alternates: { canonical: '/promotions' },
 };
 
 export default function PromotionsPage() {
+    const discounted = products.filter((p) => discountPercent(p) > 0);
+
     return (
-        <div className="bg-white min-h-screen py-16">
-            <div className="container mx-auto px-4">
-                <SectionTitle title="Promotions en cours" subtitle="Faites-vous plaisir avec nos offres limitées." />
+        <>
+            <PageIntro eyebrow="Offres en cours" title={<>Prix <em className="text-thread">doux</em></>}>
+                <p>Les codes s’indiquent directement dans votre message de commande sur Instagram.</p>
+            </PageIntro>
 
-                {promotions.length === 0 ? (
-                    <div className="text-center py-20 text-gray-500">
-                        <h3 className="text-xl font-bold mb-4">Aucune promotion en ce moment.</h3>
-                        <p className="mb-8">Inscrivez-vous à notre newsletter ou suivez-nous sur Instagram pour être alertée.</p>
-                        <Link href="/" className="bg-rose-500 text-white px-6 py-3 rounded-full hover:bg-rose-600">Retour à l'accueil</Link>
-                    </div>
-                ) : (
-                    <div className="grid grid-col-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {promotions.length > 0 && (
+                <section className="bg-clay py-10 text-[#2b1216] dark:text-on-wine" aria-label="Codes de réduction">
+                    <ul className="page-x divide-y divide-current/25">
                         {promotions.map((promo) => (
-                            <div key={promo.id} className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-rose-50">
-                                <div className="relative h-64 overflow-hidden">
-                                    <Image
-                                        src={promo.image || '/images/hero-bg.webp'}
-                                        alt={promo.title}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                    <div className="absolute top-4 left-4 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">OFFRE LIMITÉE</div>
+                            <li key={promo.id} className="flex flex-wrap items-center justify-between gap-6 py-6">
+                                <div>
+                                    <h2 className="text-4xl md:text-5xl">{promo.title}</h2>
+                                    <p className="mt-2 text-lg">{promo.description}</p>
                                 </div>
-
-                                <div className="p-6">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2 truncate group-hover:text-rose-600 transition-colors">{promo.title}</h3>
-                                    <p className="text-gray-600 mb-4 h-20 overflow-hidden text-ellipsis line-clamp-3 leading-relaxed">{promo.description}</p>
-                                    {promo.code && (
-                                        <div className="mb-4 bg-rose-50 border-2 border-dashed border-rose-200 p-3 rounded text-center">
-                                            <span className="block text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">Code Promo</span>
-                                            <span className="block text-lg font-mono font-bold text-gray-800">{promo.code}</span>
-                                        </div>
-                                    )}
-                                    <Link
-                                        href={promo.link}
-                                        className="block w-full text-center bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-rose-600 transition-colors shadow-md"
-                                    >
-                                        Voir l'offre
-                                    </Link>
-                                </div>
-                            </div>
+                                {promo.code && <CopyCode code={promo.code} />}
+                            </li>
                         ))}
-                    </div>
-                )}
-            </div>
-        </div>
+                    </ul>
+                </section>
+            )}
+
+            <section className="page-x py-14 md:py-20" aria-labelledby="reduits-title">
+                <h2 id="reduits-title" className="label font-mono">
+                    {discounted.length} pièce{discounted.length > 1 ? 's' : ''} à prix réduit
+                </h2>
+                <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-9 md:grid-cols-4 md:gap-x-5">
+                    {discounted.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+            </section>
+        </>
     );
 }

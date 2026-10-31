@@ -1,6 +1,6 @@
 # Mastour Oversize
 
-Site vitrine e-commerce premium pour la marque Mastour Oversize using Next.js 15, Tailwind CSS, and TypeScript.
+Site vitrine e-commerce de la marque Mastour Oversize, avec Next.js 16, Tailwind CSS 4 et TypeScript. Les commandes se font par message Instagram.
 
 ## 🚀 Démarrage Rapide
 
@@ -37,39 +37,48 @@ Les produits sont gérés via le fichier `data/products.json`.
       "category": "Robes",
       "description": "Description détaillée...",
       "images": ["/images/products/votre-image.webp"],
-      "featured": true, // Mettre à true pour afficher en page d'accueil
+      "colors": ["Camel", "Kaki"],
+      "stock": { "S": 5, "M": 8, "L": 6 },
+      "featured": true,
       "promotion": false
     }
     ```
 3.  Déposez les images correspondantes dans `public/images/products/`.
 
+**Photos et illustrations :** tant que `images` pointe vers `placeholder-product.svg`, la fiche affiche un vêtement dessiné dont la couleur suit le coloris choisi. Dès qu'une vraie photo est renseignée, elle remplace le dessin, sans autre modification.
+
+**Nouveau coloris :** ajoutez sa teinte dans `lib/colors.ts`. **Nouveau modèle dessiné :** choisissez sa silhouette dans `FIGURES`, en haut de `components/Garment.tsx`.
+
 ## 🏷️ Gestion des Promotions
 
 Les promotions sont gérées via `data/promotions.json`.
 
-**Pour ajouter une offre :**
 ```json
 {
   "id": "promo-ete",
   "title": "Solde d'été",
   "description": "-20% sur tout...",
   "code": "ETE2026",
-  "image": "/images/promotions/promo.webp",
-  "link": "/promotions"
+  "link": "/promotions",
+  "active": true
 }
 ```
 
+`"active": false` retire l'offre du site sans la supprimer. Les pièces à prix réduit se règlent produit par produit avec `promotion` et `discountPrice`.
+
 ## 🎨 Personnalisation
 
--   **Couleurs & Thème :** Modifiez les variables CSS dans `app/globals.css`.
--   **Images :** Remplacez les images dans `public/images`.
--   **Contact :** Le formulaire de contact est une démo client-side. Pour le rendre fonctionnel, intégrez un service comme [EmailJS](https://www.emailjs.com/).
+-   **Couleurs & Thème :** variables CSS en haut de `app/globals.css` (clair et sombre).
+-   **Bandeau d'annonces :** tableau en haut de `components/AnnouncementBar.tsx`.
+-   **Liens, email, Instagram, seuil de livraison offerte :** `lib/site.ts`.
+-   **Contact :** le formulaire prépare un email dans la messagerie de la cliente, il n'y a pas de backend d'envoi.
 
 ## 🔍 SEO
 
 -   Le site génère automatiquement `sitemap.xml` et `robots.txt`.
 -   Les métadonnées sont configurées dans chaque page.
 -   Les données structurées (JSON-LD) sont intégrées pour les produits.
+-   Définissez `NEXT_PUBLIC_SITE_URL` sur Vercel quand le domaine définitif est en place (par défaut : `https://mastour-oversize.vercel.app`).
 
 ## ☁️ Déploiement Vercel
 

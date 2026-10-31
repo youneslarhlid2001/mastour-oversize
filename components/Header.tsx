@@ -1,184 +1,130 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, Instagram, Sun, Moon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Instagram, Moon, Sun, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { useTheme } from '@/components/ThemeProvider';
+import { setSelectionOpen, useSelection } from '@/lib/selection';
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, NAV_LINKS } from '@/lib/site';
 
 export default function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [menuPath, setMenuPath] = useState<string | null>(null);
     const pathname = usePathname();
     const { theme, toggleTheme } = useTheme();
+    const { items } = useSelection();
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const closeMenu = () => setIsMenuOpen(false);
+    // Le menu se referme tout seul dès que la route change
+    const isMenuOpen = menuPath === pathname;
 
-    // Auto-close on route change
     useEffect(() => {
-        closeMenu();
-    }, [pathname]);
-
-    // Scroll lock when menu is open
-    useEffect(() => {
-        if (isMenuOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
+        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [isMenuOpen]);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-    const navLinks = [
-        { href: '/', label: 'Accueil' },
-        { href: '/articles', label: 'Collection' },
-        { href: '/promotions', label: 'Promotions' },
-        { href: '/about', label: 'La Marque' },
-        { href: '/contact', label: 'Contact' },
-    ];
+    const themeLabel = theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre';
 
     return (
         <>
-            <header
-                className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-6'
-                    }`}
-            >
-                <div className="container mx-auto px-6 flex justify-between items-center">
-
-                    {/* Mobile Menu Button - Left */}
+            <header className="page-x sticky top-0 z-40 grid h-16 grid-cols-[1fr_auto_1fr] items-center bg-paper/90 backdrop-blur-md">
+                <div className="flex items-center">
                     <button
-                        className="md:hidden text-gray-800 z-50 p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
-                        onClick={toggleMenu}
-                        aria-label="Toggle menu"
+                        type="button"
+                        onClick={() => setMenuPath(pathname)}
+                        aria-label="Ouvrir le menu"
+                        aria-expanded={isMenuOpen}
+                        className="label -ml-2 cursor-pointer p-2 lg:hidden"
                     >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        Menu
                     </button>
-
-                    {/* Logo - Monogram on mobile, Full on desktop */}
-                    <Link href="/" className="flex items-center" onClick={closeMenu}>
-                        <Logo variant="monogram" colorScheme="dark" width={40} height={40} className="md:hidden" />
-                        <Logo variant="full" colorScheme="dark" width={180} height={70} className="hidden md:block" />
-                    </Link>
-
-                    {/* Desktop Nav - Center */}
-                    <nav className="hidden md:flex items-center space-x-10 absolute left-1/2 transform -translate-x-1/2">
-                        {navLinks.map((link) => (
+                    <nav className="hidden items-center gap-7 lg:flex" aria-label="Navigation principale">
+                        {NAV_LINKS.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`text-sm uppercase tracking-widest hover:text-rose-main transition-colors pb-1 border-b-2 ${pathname === link.href ? 'border-rose-main text-rose-main' : 'border-transparent text-gray-600'
-                                    }`}
+                                aria-current={isActive(link.href) ? 'page' : undefined}
+                                className={`text-sm transition-colors hover:text-thread ${isActive(link.href) ? 'stitch-link text-thread' : ''}`}
                             >
                                 {link.label}
                             </Link>
                         ))}
                     </nav>
-
-                    {/* CTA - Right */}
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="https://instagram.com/mastouroversize"
-                            target="_blank"
-                            className={`hidden sm:flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm transition-all ${isScrolled
-                                ? 'bg-rose-main text-white hover:bg-rose-dark shadow-md'
-                                : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200'
-                                }`}
-                        >
-                            <Instagram size={16} />
-                            <span>Suivre</span>
-                        </Link>
-
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                            aria-label={theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre'}
-                        >
-                            {theme === 'dark' ? (
-                                <Sun size={18} className="text-amber-400" />
-                            ) : (
-                                <Moon size={18} className="text-gray-600" />
-                            )}
-                        </button>
-
-                        {/* Mobile Placeholder to balance layout */}
-                        <div className="w-0 md:hidden"></div>
-                    </div>
                 </div>
+
+                <Link href="/" aria-label="Mastour Oversize, accueil">
+                    <Logo className="text-base md:text-lg" />
+                </Link>
+
+                <div className="flex items-center justify-end gap-1 md:gap-3">
+                    <a
+                        href={INSTAGRAM_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Instagram @${INSTAGRAM_HANDLE}`}
+                        className="hidden p-2 transition-colors hover:text-thread sm:block"
+                    >
+                        <Instagram size={18} strokeWidth={1.5} />
+                    </a>
+                    <button
+                        type="button"
+                        onClick={toggleTheme}
+                        aria-label={themeLabel}
+                        title={themeLabel}
+                        className="hidden cursor-pointer p-2 transition-colors hover:text-thread sm:block"
+                    >
+                        {theme === 'dark' ? <Sun size={18} strokeWidth={1.5} /> : <Moon size={18} strokeWidth={1.5} />}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setSelectionOpen(true)}
+                        className="label -mr-2 flex cursor-pointer items-center gap-1.5 p-2 transition-colors hover:text-thread"
+                    >
+                        <span className="hidden sm:inline">Ma sélection</span>
+                        <span className="sm:hidden">Sélection</span>
+                        <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[0.625rem] tracking-normal ${items.length > 0 ? 'bg-thread text-white' : 'border border-line'}`}>
+                            {items.length}
+                        </span>
+                    </button>
+                </div>
+                <div className="stitch absolute inset-x-0 bottom-0 opacity-40" />
             </header>
 
-            {/* Mobile Menu Backdrop */}
-            <div
-                className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    }`}
-                onClick={closeMenu}
-            />
-
-            {/* Mobile Menu Panel */}
-            <div
-                className={`fixed inset-y-0 left-0 z-40 w-[280px] bg-white shadow-2xl transform transition-transform duration-400 ease-out md:hidden flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
-            >
-                {/* Menu Header with Logo */}
-                <div className="px-6 pt-8 pb-6 border-b border-gray-100">
-                    <Logo variant="compact" colorScheme="dark" width={160} height={30} />
-                </div>
-
-                {/* Nav Links */}
-                <nav className="flex-1 px-4 py-6 overflow-y-auto">
-                    <div className="space-y-1">
-                        {navLinks.map((link) => (
+            {/* Menu plein écran */}
+            {isMenuOpen && (
+                <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-wine text-on-wine lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+                    <div className="page-x flex h-16 shrink-0 items-center justify-between">
+                        <span className="label">Menu</span>
+                        <button type="button" onClick={() => setMenuPath(null)} aria-label="Fermer le menu" className="-mr-2 cursor-pointer p-2">
+                            <X size={22} strokeWidth={1.5} />
+                        </button>
+                    </div>
+                    <nav className="page-x flex flex-1 flex-col justify-center gap-2 py-6" aria-label="Navigation mobile">
+                        {[{ href: '/', label: 'Accueil' }, ...NAV_LINKS].map((link, i) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname === link.href
-                                        ? 'bg-rose-50 text-rose-main border-l-3 border-rose-main'
-                                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
-                                onClick={closeMenu}
+                                onClick={() => setMenuPath(null)}
+                                className="display rise text-[clamp(3rem,15vw,5rem)] leading-[1.02]"
+                                style={{ '--d': `${i * 50}ms` } as React.CSSProperties}
                             >
                                 {link.label}
                             </Link>
                         ))}
+                    </nav>
+                    <div className="page-x flex items-center justify-between py-6">
+                        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="label flex items-center gap-2">
+                            <Instagram size={16} strokeWidth={1.5} /> @{INSTAGRAM_HANDLE}
+                        </a>
+                        <button type="button" onClick={toggleTheme} className="label flex cursor-pointer items-center gap-2">
+                            {theme === 'dark' ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}
+                            {theme === 'dark' ? 'Clair' : 'Sombre'}
+                        </button>
                     </div>
-                </nav>
-
-                {/* Menu Footer */}
-                <div className="px-6 py-6 border-t border-gray-100 space-y-4">
-                    {/* Dark Mode Toggle */}
-                    <button
-                        onClick={toggleTheme}
-                        className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                    >
-                        {theme === 'dark' ? (
-                            <><Sun size={18} className="text-amber-400" /> Mode clair</>
-                        ) : (
-                            <><Moon size={18} /> Mode sombre</>
-                        )}
-                    </button>
-
-                    {/* Instagram */}
-                    <Link
-                        href="https://instagram.com/mastouroversize"
-                        target="_blank"
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium text-sm hover:shadow-lg transition-all"
-                        onClick={closeMenu}
-                    >
-                        <Instagram size={18} />
-                        @mastouroversize
-                    </Link>
                 </div>
-            </div>
+            )}
         </>
     );
 }
-
